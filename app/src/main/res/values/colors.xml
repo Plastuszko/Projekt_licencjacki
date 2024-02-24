@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="grey">#B3A7A7</color>
+    <color name="primary">#506AF6</color>
+    <color name="busy">#C10404</color>
+    <color name="secondary">#99A6F1</color>
+    <color name="chosen">#4CAF50</color>
+    <color name="BOOK_A_ROOM">#506AF6</color>
+</resources>

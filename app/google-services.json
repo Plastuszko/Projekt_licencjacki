@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "965922970506",
+    "project_id": "projekt-85ed2",
+    "storage_bucket": "projekt-85ed2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965922970506:android:c8fcd332a16d66f2d38673",
+        "android_client_info": {
+          "package_name": "com.example.projekt_licencjacki"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjXE1cnpV-_2ABIdXvNn15a6oJA37RQWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

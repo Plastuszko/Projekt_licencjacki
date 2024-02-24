@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/my_profile_menu_button"
+        android:title="My profile"
+        />
+    <item
+        android:id="@+id/list_of_rooms_menu_button"
+        android:title="List of rooms"
+        />
+    <item
+        android:id="@+id/authors"
+        android:title="Authors"
+        />
+    <item
+        android:id="@+id/log_out_menu_button"
+        android:title="Log out"
+        />
+
+</menu>
