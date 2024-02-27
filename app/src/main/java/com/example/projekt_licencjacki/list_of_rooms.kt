@@ -62,7 +62,6 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var rooms_types= ArrayList<String>()
     var rooms_capacities=ArrayList<String>()
     var room_status=ArrayList<String>()
-    var room_ids=ArrayList<String>()
     //↓↓ustawia format wyświetlanej daty
     private val formatter =SimpleDateFormat("dd.MM.yyyy")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -177,7 +176,6 @@ private fun createroom(): List<Sala_constructor> {
     rooms_types.clear()
     rooms_capacities.clear()
     room_status.clear()
-    room_ids.clear()
     //-------------------------------------------------
     return roomsList
 }
@@ -220,17 +218,12 @@ private fun createroom(): List<Sala_constructor> {
                     rooms_types.add(room_type!!)
                     val room_capacity=document.getString("capacity")
                     rooms_capacities.add(room_capacity!!)
-                    val room_id=document.getString("rid")
-//                    room_ids.add(room_id!!)
-//                    db.collection("rooms/$room_id/Days")
-//                        .get()
-//                        .addOnSuccessListener { result ->
-//                            for (document in result) {
-//                               Toast.makeText(this,document.get("Hours").toString(),Toast.LENGTH_SHORT).show()
-//
-//
-//                            }
-//                        }
+                    val booked=document.get("Days")
+                    if(booked==true) {
+                        room_status.add("Busy")
+                    }else{
+                        room_status.add("Free")
+                    }
                 }
             }
 
