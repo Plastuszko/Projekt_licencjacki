@@ -15,12 +15,13 @@ class Sala_constructor {
     var ikonka_sali: Int=0
 
 
-     constructor(room_number: String,capacity: Int,current_date: Long,chosen_hour: String,type:String){
+     constructor(room_number: String,capacity: Int,current_date: Long,chosen_hour: String,type:String,status: String){
          this.room_number=room_number
          this.capacity=capacity
          this.type=type
          this.current_date=current_date
          this.chosen_hour=chosen_hour
+         this.status=status
          if(type=="laboratory"){
              ikonka_sali= R.mipmap.computer_icon
          }

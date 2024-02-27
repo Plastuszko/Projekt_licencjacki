@@ -52,7 +52,7 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         return super.onOptionsItemSelected(item)
     }
-//koniec menu
+    //koniec menu
     val calendar= Calendar.getInstance()
     var chosen_hour=" "
     var current_date=calendar.timeInMillis
@@ -61,25 +61,16 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var rooms_numbers = ArrayList<String>()
     var rooms_types= ArrayList<String>()
     var rooms_capacities=ArrayList<String>()
+    var room_status=ArrayList<String>()
+    var room_ids=ArrayList<String>()
     //↓↓ustawia format wyświetlanej daty
     private val formatter =SimpleDateFormat("dd.MM.yyyy")
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
         //↓↓↓zczytuje i zapisuje do odpowiednich list zmienne z bazy danych
-        db.collection("rooms")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    // Dodaj dane do listy (możesz dostosować to do struktury swojej bazy danych)
-                    val room_number = document.getString("room_number")
-                    rooms_numbers.add(room_number!!)
-                    val room_type= document.getString("type")
-                    rooms_types.add(room_type!!)
-                    val room_capacity=document.getString("capacity")
-                    rooms_capacities.add(room_capacity!!)
-                }
-            }
+        check_data()
+
         //---------------------------------------------------------------------
         super.onCreate(savedInstanceState)
         binding = ListOfRoomsBinding.inflate(layoutInflater)
@@ -170,16 +161,24 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     //----------------------------------------------------------
 
 private fun createroom(): List<Sala_constructor> {
-    val roomsList = mutableListOf<Sala_constructor>()
 
+    check_data()
+    val roomsList = mutableListOf<Sala_constructor>()
     for (i in rooms_numbers.indices) {
         val roomNumber = rooms_numbers[i]
         val roomCapacity = rooms_capacities[i].toInt()
         val roomType = rooms_types[i]
-        val sala = Sala_constructor(roomNumber, roomCapacity, current_date, chosen_hour, roomType)
+        val status =room_status[i]
+        val sala = Sala_constructor(roomNumber, roomCapacity, current_date, chosen_hour, roomType,status)
         roomsList.add(sala)
     }
-
+    //usuwa dane aby nie wyśiwetlać kila razy tej samej sali
+    rooms_numbers.clear()
+    rooms_types.clear()
+    rooms_capacities.clear()
+    room_status.clear()
+    room_ids.clear()
+    //-------------------------------------------------
     return roomsList
 }
 
@@ -208,6 +207,36 @@ private fun createroom(): List<Sala_constructor> {
     }
     //--------------------------------
 
+    private fun check_data(){
 
+        db.collection("rooms")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    // Dodaj dane do listy (możesz dostosować to do struktury swojej bazy danych)
+                    val room_number = document.getString("room_number")
+                    rooms_numbers.add(room_number!!)
+                    val room_type= document.getString("type")
+                    rooms_types.add(room_type!!)
+                    val room_capacity=document.getString("capacity")
+                    rooms_capacities.add(room_capacity!!)
+                    val room_id=document.getString("rid")
+//                    room_ids.add(room_id!!)
+//                    db.collection("rooms/$room_id/Days")
+//                        .get()
+//                        .addOnSuccessListener { result ->
+//                            for (document in result) {
+//                               Toast.makeText(this,document.get("Hours").toString(),Toast.LENGTH_SHORT).show()
+//
+//
+//                            }
+//                        }
+                }
+            }
+
+
+
+
+    }
 
 }
