@@ -33,7 +33,7 @@ class Sala: AppCompatActivity() {
     }
     //koniec menu
     private lateinit var binding: SalaViewBinding
-    private val formatter = SimpleDateFormat("MMM. dd, yyyy")
+    private val formatter = SimpleDateFormat("dd.MM.yyyy")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = SalaViewBinding.inflate(layoutInflater)
@@ -44,13 +44,13 @@ class Sala: AppCompatActivity() {
         }
 
         if(intent.hasExtra("NUMER_SALI")){
-            binding.numerSali.text=intent.getStringExtra("NUMER_SALI")
+            binding.roomNumber.text=intent.getStringExtra("NUMER_SALI")
         }
         if(intent.hasExtra("ILOSC_MIEJSC")){
-            binding.capacity.text=intent.getStringExtra("ILOSC_MIEJSC")
+            binding.capacity.text=binding.capacity.text.toString() +" " + intent.getStringExtra("ILOSC_MIEJSC")
         }
         if(intent.hasExtra("RODZAJ_SALI")){
-            binding.typeOfRoom.text=intent.getStringExtra("RODZAJ_SALI")
+            binding.typeOfRoom.text=binding.typeOfRoom.text.toString()+" "+intent.getStringExtra("RODZAJ_SALI")
         }
         if(intent.hasExtra("CHOSEN_DATE")){
             displayFormattedDate(intent.getLongExtra("CHOSEN_DATE",0))

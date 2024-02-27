@@ -26,9 +26,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <TextView
-        android:id="@+id/numer_sali"
+        android:id="@+id/room_number"
         android:textSize="30dp"
-        android:text="Numer sali"
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,7 +35,7 @@
          />
     <TextView
         android:id="@+id/capacity"
-        android:text="ilosc miejsc:"
+        android:text="Capacity:"
         android:textSize="20dp"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
@@ -44,16 +43,12 @@
         />
     <TextView
         android:id="@+id/type_of_room"
-        android:text="rodzaj sali:"
+        android:text="Type of room:"
         android:textSize="20dp"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-    <TextView
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="hello"></TextView>
+
 </LinearLayout>
 </LinearLayout>
         <TextView
@@ -79,6 +74,17 @@
             android:layout_height="wrap_content"
             android:text="BOOK A ROOM"
             />
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Programs:"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/programs_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 </LinearLayout>
 
 </LinearLayout>

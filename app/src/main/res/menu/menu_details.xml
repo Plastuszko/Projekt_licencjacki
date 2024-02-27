@@ -17,7 +17,7 @@
         />
     <item
         android:id="@+id/log_out_menu_button"
-        android:title="Log out"
+        android:title="QUIT"
         />
 
 </menu>

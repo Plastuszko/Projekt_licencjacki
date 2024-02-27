@@ -52,18 +52,18 @@
 
 
         <TextView
-            android:id="@+id/rodzaj_sali"
+            android:id="@+id/type_of_room"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rodzaj sali: wykładowa/ćwiczeniowa/konferencyjna"
+            android:text="Type of Room:"
             app:layout_constraintStart_toEndOf="@+id/cardView"
             tools:layout_editor_absoluteY="67dp" />
 
         <TextView
-            android:id="@+id/ilosc_miejsc"
+            android:id="@+id/capacity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ilość miejsc w sali: xx"
+            android:text="Capacity:"
             android:textSize="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/cardView"
@@ -74,7 +74,7 @@
             android:id="@+id/status_sali"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Stan sali: Zajęta/Wolna"
+            android:text="Booked:"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.376"

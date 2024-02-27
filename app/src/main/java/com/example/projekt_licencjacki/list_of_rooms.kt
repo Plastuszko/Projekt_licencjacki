@@ -62,7 +62,7 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var rooms_types= ArrayList<String>()
     var rooms_capacities=ArrayList<String>()
     //↓↓ustawia format wyświetlanej daty
-    private val formatter =SimpleDateFormat("MMM. dd, yyyy")
+    private val formatter =SimpleDateFormat("dd.MM.yyyy")
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
