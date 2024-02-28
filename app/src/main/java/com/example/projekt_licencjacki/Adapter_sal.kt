@@ -34,6 +34,7 @@ class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_const
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+            holder.status_sali.text=lista_sal[position].status
             holder.room_number.text=lista_sal[position].room_number
             holder.capacity.text=holder.capacity.text.toString()+" "+ lista_sal[position].capacity.toString()
             holder.type_of_room.text=holder.type_of_room.text.toString()+ " "+ lista_sal[position].type

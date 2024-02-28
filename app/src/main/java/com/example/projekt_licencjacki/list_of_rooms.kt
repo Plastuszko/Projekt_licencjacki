@@ -55,7 +55,6 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     //koniec menu
     val calendar= Calendar.getInstance()
     var chosen_hour=" "
-    var current_date=calendar.timeInMillis
     private lateinit var binding: ListOfRoomsBinding
     var db = Firebase.firestore
     var rooms_numbers = ArrayList<String>()
@@ -65,35 +64,32 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var room_ids=ArrayList<String>()
     //↓↓ustawia format wyświetlanej daty
     private val formatter =SimpleDateFormat("dd.MM.yyyy")
+    var current_date=formatter.format(calendar.timeInMillis)
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
+        Log.d(TAG,"first current_date: $current_date")
         //↓↓↓zczytuje i zapisuje do odpowiednich list zmienne z bazy danych
         check_data()
+
 
         //---------------------------------------------------------------------
         super.onCreate(savedInstanceState)
         binding = ListOfRoomsBinding.inflate(layoutInflater)
         //↓↓↓------------------odpowiada za zapisanie do zmiennej i wyświetlenie dzisiejszej daty przy wejściu do aktywności
-        var current_date=Calendar.getInstance().time
-        binding.displayDate.text=formatter.format(current_date)
+        var current_date=formatter.format(Calendar.getInstance().time)
+        binding.displayDate.text=(current_date)
         //---------------------------------
         setContentView(binding.root)
 
 
 
         binding.chooseDateButton.setOnClickListener{
+            Log.d(TAG,"before:$ $current_date")
             DatePickerDialog(this,this,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show()
+            Log.d(TAG,"after : $current_date")
         }
         //↓↓↓wygenerowanie aktualnej listy pokoi
-        fun reload_rooms(){
 
-            if(chosen_hour!=" "){
-            val adapter = Adapter_sal(this,createroom())
-            binding.listaSal.layoutManager= LinearLayoutManager(applicationContext)
-            binding.listaSal.adapter=adapter
-            }
-        }
         //------------------------------------
         //↓↓↓działanie dla przycisku chowającego ram czasu i daty
         binding.hideHourButton.setOnClickListener(){
@@ -153,7 +149,9 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         binding.hour7Button.setBackgroundColor(ContextCompat.getColor(this,R.color.primary))
     }
     private fun onButtonClick(clickedButton: Button){
+        Log.d(TAG,"before : $chosen_hour")
         chosen_hour=clickedButton.text.toString()
+        Log.d(TAG,"after : $chosen_hour")
         resetButtonColors()
         val color = ContextCompat.getColor(this,R.color.chosen)
         clickedButton.setBackgroundColor(color)
@@ -161,22 +159,34 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     //----------------------------------------------------------
 
 private fun createroom(): List<Sala_constructor> {
-
-    check_data()
     val roomsList = mutableListOf<Sala_constructor>()
+    check_data()
+    if(room_status.isNotEmpty()){
     for (i in rooms_numbers.indices) {
-        Log.d(TAG,"i= $i rooms_numbers.size: ${rooms_numbers.size}")
+        Log.d(TAG, "i= $i rooms_numbers.size: ${rooms_numbers.size}")
         val roomNumber = rooms_numbers[i]
         val roomCapacity = rooms_capacities[i].toInt()
         val roomType = rooms_types[i]
-        Log.d(TAG,"room_status: $room_status")
+        var roomStatus=" "
+        if(room_status[i]==true){
+             roomStatus="unavailable"
+        }else{
+            roomStatus="available"
+        }
+        Log.d(TAG, "room_status: $room_status")
 
 
-
-
-        val sala = Sala_constructor(roomNumber, roomCapacity, current_date, chosen_hour, roomType,"booked")
+        val sala = Sala_constructor(
+            roomNumber,
+            roomCapacity,
+            current_date,
+            chosen_hour,
+            roomType,
+            roomStatus
+        )
         roomsList.add(sala)
     }
+    }else{}
     //usuwa dane aby nie wyśiwetlać kila razy tej samej sali
     rooms_numbers.clear()
     rooms_types.clear()
@@ -192,10 +202,22 @@ private fun createroom(): List<Sala_constructor> {
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         //↓↓↓zapisuje ostatnia wybrana date w trakcie wyboru w okienku
         calendar.set(year,month,dayOfMonth)
-        displayFormattedDate(calendar.timeInMillis)
-        current_date=calendar.timeInMillis
+        //↓zmienia na cyfry
+        current_date=formatter.format(calendar.timeInMillis)
+        displayFormattedDate(current_date)
         //------------------------------------------------------------
-        //↓sprawdza czy została już wybrana godzina, jak nie to nie załaduje sal
+        reload_rooms()
+
+
+    }
+    //↓↓↓nadpisuje tekst wybranej daty
+    private fun displayFormattedDate(timestamp: String){
+        binding.displayDate.text=timestamp
+    }
+    //--------------------------------
+    fun reload_rooms(){
+        Log.d(TAG,current_date)
+
         if(chosen_hour!=" ") {
             val adapter = Adapter_sal(this, createroom())
             binding.listaSal.layoutManager = LinearLayoutManager(applicationContext)
@@ -203,14 +225,7 @@ private fun createroom(): List<Sala_constructor> {
         }else{
             Toast.makeText(this,"Choose hour to show results",Toast.LENGTH_SHORT).show()
         }
-        //----------------------------------------------------------------------
     }
-    //↓↓↓nadpisuje tekst wybranej daty
-    private fun displayFormattedDate(timestamp: Long){
-        binding.displayDate.text=formatter.format(timestamp)
-    }
-    //--------------------------------
-
     private fun check_data() {
         var i = 0
         val totalRooms = rooms_numbers.size
@@ -237,47 +252,36 @@ private fun createroom(): List<Sala_constructor> {
                             .addOnCompleteListener { daysResult ->
                                 if (daysResult.isSuccessful) {
                                     i++
-                                    Log.d(TAG, i.toString())
                                     for (dayDocument in daysResult.result!!) {
                                         var day_id = dayDocument.getString("did")
-                                        Log.d(TAG, "day_id: " + day_id.toString())
+
                                         var date = dayDocument.getString("Day")
-                                        Log.d(TAG, "date: " + date.toString())
+
                                         val hoursMap = dayDocument.get("Hours") as? Map<String, Map<String, Any>>
                                         if (hoursMap != null) {
                                             for ((hour, hourData) in hoursMap) {
                                                 val booked = hourData["booked"] as? Boolean
                                                 val who = hourData["who"] as? String
+                                                if(current_date==date.toString()){
+                                                    if (chosen_hour == hour) {
+//                                                        Log.d(TAG,"WORKS , chosen_hour $hour")
+                                                        if (booked != null) {
+                                                            room_status.add(booked)
 
-                                                if(formatter.format(current_date)==date.toString()){
-
-                                                if (chosen_hour == hour) {
-                                                    if (booked != null) {
-                                                        room_status.add(booked)
-
-                                                    } else {
-                                                        // Jeżeli 'booked' jest nullem, możesz dodać defaultowy status
-                                                        room_status.add(false) // lub true, w zależności od Twoich potrzeb
-                                                        Log.d(
-                                                            TAG,
-                                                            "Warning: 'booked' is null for room_id: $room_id, hour: $hour"
-                                                        )
+                                                        } else {
+                                                            // Jeżeli 'booked' jest nullem, możesz dodać defaultowy status
+                                                            room_status.add(false) // lub true, w zależności od Twoich potrzeb
+                                                            Log.d(
+                                                                TAG,
+                                                                "Warning: 'booked' is null for room_id: $room_id, hour: $hour"
+                                                            )
+                                                        }
                                                     }
                                                 }
-                                                }
-
-                                                // Tutaj możesz używać booked, who lub innych wartości z pobranych danych
                                             }
                                         }
 
-                                        completedRooms++
 
-                                        // Sprawdź, czy wszystkie operacje zostały zakończone
-                                        if (completedRooms == totalRooms) {
-                                            // Wszystkie operacje zakończone, wyświetl Toast lub wykonaj inne operacje
-
-                                            // Tutaj możesz używać room_status lub innych wartości
-                                        }
                                     }
 
                                 }

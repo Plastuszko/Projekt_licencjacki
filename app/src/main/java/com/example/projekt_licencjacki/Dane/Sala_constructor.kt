@@ -9,13 +9,13 @@ class Sala_constructor {
     var capacity: Int=0
     var status: String=""
     var date_of_room: Long=0
-    var current_date: Long=0
+    var current_date: String=""
     var chosen_hour: String=""
     var hour_of_room: String=""
     var ikonka_sali: Int=0
 
 
-     constructor(room_number: String,capacity: Int,current_date: Long,chosen_hour: String,type:String,status: String){
+     constructor(room_number: String,capacity: Int,current_date: String,chosen_hour: String,type:String,status: String){
          this.room_number=room_number
          this.capacity=capacity
          this.type=type
