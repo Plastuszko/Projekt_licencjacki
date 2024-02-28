@@ -168,8 +168,12 @@ private fun createroom(): List<Sala_constructor> {
         val roomNumber = rooms_numbers[i]
         val roomCapacity = rooms_capacities[i].toInt()
         val roomType = rooms_types[i]
-//        val status =room_status[i]
-        val sala = Sala_constructor(roomNumber, roomCapacity, current_date, chosen_hour, roomType,"Lorem Ipsum")
+        val booked: String
+
+
+
+
+        val sala = Sala_constructor(roomNumber, roomCapacity, current_date, chosen_hour, roomType,"booked")
         roomsList.add(sala)
     }
     //usuwa dane aby nie wyśiwetlać kila razy tej samej sali
@@ -206,38 +210,59 @@ private fun createroom(): List<Sala_constructor> {
     }
     //--------------------------------
 
-    private fun check_data(){
+    private fun check_data() {
+        var i=0
+        val totalRooms = rooms_numbers.size
+        var completedRooms = 0
 
         db.collection("rooms")
             .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
+            .addOnCompleteListener { roomsResult ->
+                if (roomsResult.isSuccessful) {
+                    for (roomDocument in roomsResult.result!!) {
 
-                    // Dodaj dane do listy (możesz dostosować to do struktury swojej bazy danych)
-                    val room_number = document.getString("room_number")
-                    rooms_numbers.add(room_number!!)
-                    val room_type= document.getString("type")
-                    rooms_types.add(room_type!!)
-                    val room_capacity=document.getString("capacity")
-                    rooms_capacities.add(room_capacity!!)
-                    val room_id=document.getString("rid")
-                    room_ids.add(room_id!!)
-                    db.collection("rooms/$room_id/Days")
-                        .get()
-                        .addOnSuccessListener { result ->
-                            for (hoursmap in result) {
-                                val data = document.data
-                                val hoursMap = data["Hours"] as? Map<String,Any>
+                        var room_id = roomDocument.getString("rid")
+                        Log.d(TAG,"room_id: "+room_id.toString())
+                        var room_number = roomDocument.getString("room_number")
+                        rooms_numbers.add(room_number!!)
+                        var room_type = roomDocument.getString("type")
+                        rooms_types.add(room_type!!)
+                        var room_capacity = roomDocument.getString("capacity")
+                        rooms_capacities.add(room_capacity!!)
+                        room_ids.add(room_id!!)
+
+                        db.collection("rooms/${room_id.toString()}/Days")
+                            .get()
+                            .addOnCompleteListener{ daysResult ->
+                                if(daysResult.isSuccessful){
+                                    i++
+                                    Log.d(TAG,i.toString())
+                                    for(dayDocument in daysResult.result!!){
+                                        var day_id=dayDocument.getString("did")
+                                        Log.d(TAG,"day_id: "+ day_id.toString())
+                                        var date=dayDocument.getString("Day")
+                                        Log.d(TAG,"date: "+ date.toString())
+                                        val hoursMap =dayDocument.get("Hours") as? Map<String,Map<String,Any>>
+                                        if (hoursMap != null) {
+                                            for ((hour, hourData) in hoursMap) {
+                                                val booked = hourData["booked"] as? Boolean
+                                                val who = hourData["who"] as? String
+
+                                                Log.d(TAG, "Hour: $hour, Booked: $booked, Who: $who")
+                                                if(chosen_hour==hour.toString()){
+                                                    room_status.add(booked!!.toString())
+                                                }
+                                                // Tutaj możesz używać booked, who lub innych wartości z pobranych danych
+                                            }
+                                    }
+                                }
 
                             }
-                        }
-
-
-
-
-
+                }
+            }
     }
 
+
+}}
 }
-    }
-}
+
