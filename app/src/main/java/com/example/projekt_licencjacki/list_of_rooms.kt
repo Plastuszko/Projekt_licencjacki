@@ -61,7 +61,7 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var rooms_numbers = ArrayList<String>()
     var rooms_types= ArrayList<String>()
     var rooms_capacities=ArrayList<String>()
-    var room_status=ArrayList<String>()
+    var room_status=ArrayList<Boolean>()
     var room_ids=ArrayList<String>()
     //↓↓ustawia format wyświetlanej daty
     private val formatter =SimpleDateFormat("dd.MM.yyyy")
@@ -165,10 +165,11 @@ private fun createroom(): List<Sala_constructor> {
     check_data()
     val roomsList = mutableListOf<Sala_constructor>()
     for (i in rooms_numbers.indices) {
+        Log.d(TAG,"i= $i rooms_numbers.size: ${rooms_numbers.size}")
         val roomNumber = rooms_numbers[i]
         val roomCapacity = rooms_capacities[i].toInt()
         val roomType = rooms_types[i]
-        val booked: String
+        Log.d(TAG,"room_status: $room_status")
 
 
 
@@ -211,7 +212,7 @@ private fun createroom(): List<Sala_constructor> {
     //--------------------------------
 
     private fun check_data() {
-        var i=0
+        var i = 0
         val totalRooms = rooms_numbers.size
         var completedRooms = 0
 
@@ -222,7 +223,7 @@ private fun createroom(): List<Sala_constructor> {
                     for (roomDocument in roomsResult.result!!) {
 
                         var room_id = roomDocument.getString("rid")
-                        Log.d(TAG,"room_id: "+room_id.toString())
+                        Log.d(TAG, "room_id: " + room_id.toString())
                         var room_number = roomDocument.getString("room_number")
                         rooms_numbers.add(room_number!!)
                         var room_type = roomDocument.getString("type")
@@ -233,36 +234,57 @@ private fun createroom(): List<Sala_constructor> {
 
                         db.collection("rooms/${room_id.toString()}/Days")
                             .get()
-                            .addOnCompleteListener{ daysResult ->
-                                if(daysResult.isSuccessful){
+                            .addOnCompleteListener { daysResult ->
+                                if (daysResult.isSuccessful) {
                                     i++
-                                    Log.d(TAG,i.toString())
-                                    for(dayDocument in daysResult.result!!){
-                                        var day_id=dayDocument.getString("did")
-                                        Log.d(TAG,"day_id: "+ day_id.toString())
-                                        var date=dayDocument.getString("Day")
-                                        Log.d(TAG,"date: "+ date.toString())
-                                        val hoursMap =dayDocument.get("Hours") as? Map<String,Map<String,Any>>
+                                    Log.d(TAG, i.toString())
+                                    for (dayDocument in daysResult.result!!) {
+                                        var day_id = dayDocument.getString("did")
+                                        Log.d(TAG, "day_id: " + day_id.toString())
+                                        var date = dayDocument.getString("Day")
+                                        Log.d(TAG, "date: " + date.toString())
+                                        val hoursMap = dayDocument.get("Hours") as? Map<String, Map<String, Any>>
                                         if (hoursMap != null) {
                                             for ((hour, hourData) in hoursMap) {
                                                 val booked = hourData["booked"] as? Boolean
                                                 val who = hourData["who"] as? String
 
-                                                Log.d(TAG, "Hour: $hour, Booked: $booked, Who: $who")
-                                                if(chosen_hour==hour.toString()){
-                                                    room_status.add(booked!!.toString())
+                                                if(formatter.format(current_date)==date.toString()){
+
+                                                if (chosen_hour == hour) {
+                                                    if (booked != null) {
+                                                        room_status.add(booked)
+
+                                                    } else {
+                                                        // Jeżeli 'booked' jest nullem, możesz dodać defaultowy status
+                                                        room_status.add(false) // lub true, w zależności od Twoich potrzeb
+                                                        Log.d(
+                                                            TAG,
+                                                            "Warning: 'booked' is null for room_id: $room_id, hour: $hour"
+                                                        )
+                                                    }
                                                 }
+                                                }
+
                                                 // Tutaj możesz używać booked, who lub innych wartości z pobranych danych
                                             }
-                                    }
-                                }
+                                        }
 
+                                        completedRooms++
+
+                                        // Sprawdź, czy wszystkie operacje zostały zakończone
+                                        if (completedRooms == totalRooms) {
+                                            // Wszystkie operacje zakończone, wyświetl Toast lub wykonaj inne operacje
+
+                                            // Tutaj możesz używać room_status lub innych wartości
+                                        }
+                                    }
+
+                                }
                             }
+                    }
                 }
             }
     }
-
-
-}}
 }
 
