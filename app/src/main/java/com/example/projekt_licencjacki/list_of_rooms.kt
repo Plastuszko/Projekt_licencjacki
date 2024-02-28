@@ -57,10 +57,13 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var chosen_hour=" "
     private lateinit var binding: ListOfRoomsBinding
     var db = Firebase.firestore
+    var Map_of_status: MutableMap <String,Any> = mutableMapOf()
+    var Map_of_numbers: MutableMap <String,String> = mutableMapOf()
     var rooms_numbers = ArrayList<String>()
+    var Map_of_types: MutableMap<String,String> = mutableMapOf()
     var rooms_types= ArrayList<String>()
+    var Map_of_capacities: MutableMap<String,Int> = mutableMapOf()
     var rooms_capacities=ArrayList<String>()
-    var room_status=ArrayList<Boolean>()
     var room_ids=ArrayList<String>()
     //↓↓ustawia format wyświetlanej daty
     private val formatter =SimpleDateFormat("dd.MM.yyyy")
@@ -159,21 +162,28 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     //----------------------------------------------------------
 
 private fun createroom(): List<Sala_constructor> {
+
+
+
     val roomsList = mutableListOf<Sala_constructor>()
-    check_data()
-    if(room_status.isNotEmpty()){
-    for (i in rooms_numbers.indices) {
-        Log.d(TAG, "i= $i rooms_numbers.size: ${rooms_numbers.size}")
-        val roomNumber = rooms_numbers[i]
-        val roomCapacity = rooms_capacities[i].toInt()
-        val roomType = rooms_types[i]
+    if(Map_of_status.isNotEmpty()){
+        Log.d(TAG,"room_ids:"+room_ids.size.toString())
+    for (i in room_ids.indices) {
+        val room_id=room_ids[i]
+        val roomNumber = Map_of_numbers[room_id]!!
+        Log.d(TAG,"roomNumber: "+roomNumber)
+        val roomCapacity = Map_of_capacities[room_id]!!
+        Log.d(TAG,"roomCapacity: "+roomCapacity)
+        val roomType = Map_of_types[room_id]!!
+        Log.d(TAG,"roomType: "+roomType)
         var roomStatus=" "
-        if(room_status[i]==true){
-             roomStatus="unavailable"
+        Log.d(TAG,"status: "+Map_of_status[room_id])
+        if(Map_of_status[room_id]==false){
+             roomStatus="available"
         }else{
-            roomStatus="available"
+            roomStatus="unavailable"
         }
-        Log.d(TAG, "room_status: $room_status")
+        Log.d(TAG, "room_status: $Map_of_status")
 
 
         val sala = Sala_constructor(
@@ -185,13 +195,15 @@ private fun createroom(): List<Sala_constructor> {
             roomStatus
         )
         roomsList.add(sala)
+
     }
     }else{}
     //usuwa dane aby nie wyśiwetlać kila razy tej samej sali
-    rooms_numbers.clear()
-    rooms_types.clear()
-    rooms_capacities.clear()
-    room_status.clear()
+    room_ids.clear()
+    Map_of_numbers.clear()
+    Map_of_capacities.clear()
+    Map_of_types.clear()
+    Map_of_status.clear()
     //-------------------------------------------------
     return roomsList
 }
@@ -214,8 +226,9 @@ private fun createroom(): List<Sala_constructor> {
     private fun displayFormattedDate(timestamp: String){
         binding.displayDate.text=timestamp
     }
-    //--------------------------------
+    //--------------------------
     fun reload_rooms(){
+        check_data()
         Log.d(TAG,current_date)
 
         if(chosen_hour!=" ") {
@@ -227,8 +240,6 @@ private fun createroom(): List<Sala_constructor> {
         }
     }
     private fun check_data() {
-        val totalRooms = rooms_numbers.size
-        var completedRooms = 0
 
         db.collection("rooms")
             .get()
@@ -237,13 +248,12 @@ private fun createroom(): List<Sala_constructor> {
                     for (roomDocument in roomsResult.result!!) {
 
                         var room_id = roomDocument.getString("rid")
-                        Log.d(TAG, "room_id: " + room_id.toString())
                         var room_number = roomDocument.getString("room_number")
-                        rooms_numbers.add(room_number!!)
+                        Map_of_numbers[room_id!!]=room_number.toString()
                         var room_type = roomDocument.getString("type")
-                        rooms_types.add(room_type!!)
+                        Map_of_types[room_id!!]=room_type.toString()
                         var room_capacity = roomDocument.getString("capacity")
-                        rooms_capacities.add(room_capacity!!)
+                        Map_of_capacities[room_id!!]=room_capacity!!.toInt()
                         room_ids.add(room_id!!)
 
                         db.collection("rooms/${room_id.toString()}/Days")
@@ -258,21 +268,18 @@ private fun createroom(): List<Sala_constructor> {
                                         if (hoursMap != null) {
                                             for ((hour, hourData) in hoursMap) {
                                                 val booked = hourData["booked"] as? Boolean
-                                                val who = hourData["who"] as? String
                                                 if(current_date==date.toString()){
                                                     if (chosen_hour == hour) {
-
                                                         if (booked != null) {
-                                                            room_status.add(booked)
-                                                            Log.d(TAG,"current room: $room_number, room_id: $room_id, booked: $booked")
-                                                        } else {
-                                                            // Jeżeli 'booked' jest nullem, możesz dodać defaultowy status
-                                                            room_status.add(false) // lub true, w zależności od Twoich potrzeb
+                                                            Map_of_status[room_id]=booked!!
+                                                        }else{
                                                             Log.d(
                                                                 TAG,
                                                                 "Warning: 'booked' is null for room_id: $room_id, hour: $hour"
                                                             )
                                                         }
+
+
                                                     }
                                                 }
                                             }
