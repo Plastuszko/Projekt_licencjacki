@@ -227,7 +227,6 @@ private fun createroom(): List<Sala_constructor> {
         }
     }
     private fun check_data() {
-        var i = 0
         val totalRooms = rooms_numbers.size
         var completedRooms = 0
 
@@ -251,10 +250,8 @@ private fun createroom(): List<Sala_constructor> {
                             .get()
                             .addOnCompleteListener { daysResult ->
                                 if (daysResult.isSuccessful) {
-                                    i++
                                     for (dayDocument in daysResult.result!!) {
                                         var day_id = dayDocument.getString("did")
-
                                         var date = dayDocument.getString("Day")
 
                                         val hoursMap = dayDocument.get("Hours") as? Map<String, Map<String, Any>>
@@ -264,10 +261,10 @@ private fun createroom(): List<Sala_constructor> {
                                                 val who = hourData["who"] as? String
                                                 if(current_date==date.toString()){
                                                     if (chosen_hour == hour) {
-//                                                        Log.d(TAG,"WORKS , chosen_hour $hour")
+
                                                         if (booked != null) {
                                                             room_status.add(booked)
-
+                                                            Log.d(TAG,"current room: $room_number, room_id: $room_id, booked: $booked")
                                                         } else {
                                                             // Jeżeli 'booked' jest nullem, możesz dodać defaultowy status
                                                             room_status.add(false) // lub true, w zależności od Twoich potrzeb
