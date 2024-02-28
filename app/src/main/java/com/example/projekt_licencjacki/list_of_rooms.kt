@@ -212,6 +212,7 @@ private fun createroom(): List<Sala_constructor> {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
+
                     // Dodaj dane do listy (możesz dostosować to do struktury swojej bazy danych)
                     val room_number = document.getString("room_number")
                     rooms_numbers.add(room_number!!)
@@ -221,13 +222,16 @@ private fun createroom(): List<Sala_constructor> {
                     rooms_capacities.add(room_capacity!!)
                     val room_id=document.getString("rid")
                     room_ids.add(room_id!!)
-//                    db.collection("rooms/$room_id/Days")
-//                        .get()
-//                        .addOnSuccessListener { result ->
-//                            for (document in result) {
-//
-//                            }
-//                        }
+                    db.collection("rooms/$room_id/Days")
+                        .get()
+                        .addOnSuccessListener { result ->
+                            for (hoursmap in result) {
+                                val data = document.data
+                                val hoursMap = data["Hours"] as? Map<String,Any>
+
+                            }
+                        }
+
 
 
 
