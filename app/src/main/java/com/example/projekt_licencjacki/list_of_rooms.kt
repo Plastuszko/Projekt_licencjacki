@@ -71,14 +71,13 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var current_date=formatter.format(calendar.timeInMillis)
     override fun onCreate(savedInstanceState: Bundle?) {
 
+
         Log.d(TAG,"first current_date: $current_date")
-        //↓↓↓zczytuje i zapisuje do odpowiednich list zmienne z bazy danych
+        //↓↓↓pasek kodu odpowiadający za nadipsywanie danych na bieżąco
         lifecycleScope.launch {
             check_data()
             reload_rooms()
         }
-
-
         //---------------------------------------------------------------------
         super.onCreate(savedInstanceState)
         binding = ListOfRoomsBinding.inflate(layoutInflater)
