@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.projekt_licencjacki.Dane.Sala_constructor
 import com.example.projekt_licencjacki.databinding.ListOfRoomsBinding
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -113,34 +114,54 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         //----------------------------------------------------
         // ↓↓↓działania dla przycisków ram czasu--
         binding.hour1Button.setOnClickListener{
-            onButtonClick(binding.hour1Button)
-            reload_rooms()
+            lifecycleScope.launch {
+                onButtonClick(binding.hour1Button)
+                reload_rooms()
+            }
         }
-        binding.hour2Button.setOnClickListener{
-            onButtonClick(binding.hour2Button)
-            reload_rooms()
 
+        binding.hour2Button.setOnClickListener{
+            lifecycleScope.launch {
+                onButtonClick(binding.hour2Button)
+                reload_rooms()
+            }
         }
+
         binding.hour3Button.setOnClickListener{
-            onButtonClick(binding.hour3Button)
-            reload_rooms()
+            lifecycleScope.launch {
+                onButtonClick(binding.hour3Button)
+                reload_rooms()
+            }
         }
+
         binding.hour4Button.setOnClickListener{
-            onButtonClick(binding.hour4Button)
-            reload_rooms()
+            lifecycleScope.launch {
+                onButtonClick(binding.hour4Button)
+                reload_rooms()
+            }
         }
+
         binding.hour5Button.setOnClickListener{
-            onButtonClick(binding.hour5Button)
-            reload_rooms()
+            lifecycleScope.launch {
+                onButtonClick(binding.hour5Button)
+                reload_rooms()
+            }
         }
+
         binding.hour6Button.setOnClickListener{
-            onButtonClick(binding.hour6Button)
-            reload_rooms()
+            lifecycleScope.launch {
+                onButtonClick(binding.hour6Button)
+                reload_rooms()
+            }
         }
+
         binding.hour7Button.setOnClickListener{
-            onButtonClick(binding.hour7Button)
-            reload_rooms()
+            lifecycleScope.launch {
+                onButtonClick(binding.hour7Button)
+                reload_rooms()
+            }
         }
+
         //-----------------------------------
 
     }
@@ -164,7 +185,7 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     }
     //----------------------------------------------------------
 
-private fun createroom(): List<Sala_constructor> {
+private suspend fun createroom(): List<Sala_constructor> {
     check_data()
 
 
@@ -217,90 +238,81 @@ private fun createroom(): List<Sala_constructor> {
 
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        //↓↓↓zapisuje ostatnia wybrana date w trakcie wyboru w okienku
-        calendar.set(year,month,dayOfMonth)
-        //↓zmienia na cyfry
-        current_date=formatter.format(calendar.timeInMillis)
-        displayFormattedDate(current_date)
-        //------------------------------------------------------------
-        reload_rooms()
-
-
+        lifecycleScope.launch {
+            //↓↓↓zapisuje ostatnią wybraną datę w trakcie wyboru w okienku
+            calendar.set(year, month, dayOfMonth)
+            //↓zmienia na cyfry
+            current_date = formatter.format(calendar.timeInMillis)
+            displayFormattedDate(current_date)
+            //------------------------------------------------------------
+            reload_rooms()
+        }
     }
     //↓↓↓nadpisuje tekst wybranej daty
-    private fun displayFormattedDate(timestamp: String){
-        binding.displayDate.text=timestamp
+    private fun displayFormattedDate(timestamp: String) {
+        binding.displayDate.text = timestamp
     }
-    //--------------------------
-    fun reload_rooms(){
-        Log.d(TAG,current_date)
 
-        if(chosen_hour!=" ") {
+    suspend fun reload_rooms() {
+        Log.d(TAG, current_date)
+
+        if (chosen_hour != " ") {
             val adapter = Adapter_sal(this, createroom())
             binding.listaSal.layoutManager = LinearLayoutManager(applicationContext)
             binding.listaSal.adapter = adapter
-        }else{
-            Toast.makeText(this,"Choose hour to show results",Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Choose hour to show results", Toast.LENGTH_SHORT).show()
         }
     }
-    private fun check_data() {
+    private suspend fun fetchRoomData(roomDocument: DocumentSnapshot) {
+        val room_id = roomDocument.getString("rid")
+        var room_number = roomDocument.getString("room_number")
+        Map_of_numbers[room_id!!] = room_number.toString()
+        var room_type = roomDocument.getString("type")
+        Map_of_types[room_id!!] = room_type.toString()
+        var room_capacity = roomDocument.getString("capacity")
+        Map_of_capacities[room_id!!] = room_capacity!!.toInt()
+        room_ids.add(room_id!!)
 
-        db.collection("rooms")
-            .get()
-            .addOnCompleteListener { roomsResult ->
-                if (roomsResult.isSuccessful) {
-                    for (roomDocument in roomsResult.result!!) {
+        try {
+            val daysSnapshot = db.collection("rooms/${room_id.toString()}/Days").get().await()
+            for (dayDocument in daysSnapshot.documents) {
+                var day_id = dayDocument.getString("did")
+                var date = dayDocument.getString("Day")
 
-                        var room_id = roomDocument.getString("rid")
-                        var room_number = roomDocument.getString("room_number")
-                        Map_of_numbers[room_id!!]=room_number.toString()
-                        var room_type = roomDocument.getString("type")
-                        Map_of_types[room_id!!]=room_type.toString()
-                        var room_capacity = roomDocument.getString("capacity")
-                        Map_of_capacities[room_id!!]=room_capacity!!.toInt()
-                        room_ids.add(room_id!!)
-
-                        db.collection("rooms/${room_id.toString()}/Days")
-                            .get()
-                            .addOnCompleteListener { daysResult ->
-                                if (daysResult.isSuccessful) {
-                                    for (dayDocument in daysResult.result!!) {
-                                        var day_id = dayDocument.getString("did")
-                                        var date = dayDocument.getString("Day")
-
-                                        val hoursMap = dayDocument.get("Hours") as? Map<String, Map<String, Any>>
-                                        if (hoursMap != null) {
-                                            for ((hour, hourData) in hoursMap) {
-                                                val booked = hourData["booked"] as? Boolean
-                                                if(current_date==date.toString()){
-                                                    if (chosen_hour == hour) {
-                                                        if (booked != null) {
-                                                            Map_of_status[room_id]=booked!!
-                                                        }else{
-                                                            Log.d(
-                                                                TAG,
-                                                                "Warning: 'booked' is null for room_id: $room_id, hour: $hour"
-                                                            )
-                                                        }
-
-
-                                                    }
-                                                }
-                                            }
-                                        }
-
-
-                                    }
-
+                val hoursMap = dayDocument.get("Hours") as? Map<String, Map<String, Any>>
+                if (hoursMap != null) {
+                    for ((hour, hourData) in hoursMap) {
+                        val booked = hourData["booked"] as? Boolean
+                        if (current_date == date.toString()) {
+                            if (chosen_hour == hour) {
+                                if (booked != null) {
+                                    Map_of_status[room_id] = booked!!
+                                } else {
+                                    Log.d(
+                                        TAG,
+                                        "Warning: 'booked' is null for room_id: $room_id, hour: $hour"
+                                    )
                                 }
                             }
-
-                            .addOnFailureListener { exception ->
-                                Log.e(TAG,"nie wgrano wartości hours")
-                            }
+                        }
                     }
                 }
             }
+        } catch (exception: Exception) {
+            Log.e(TAG, "Failed to fetch room data: ${exception.message}", exception)
+        }
+    }
+
+    private suspend fun check_data() {
+        try {
+            val roomsSnapshot = db.collection("rooms").get().await()
+            for (roomDocument in roomsSnapshot.documents) {
+                fetchRoomData(roomDocument)
+            }
+        } catch (exception: Exception) {
+            Log.e(TAG, "Failed to fetch room data: ${exception.message}", exception)
+        }
     }
 }
 
