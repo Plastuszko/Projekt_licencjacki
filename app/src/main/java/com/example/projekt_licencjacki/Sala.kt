@@ -1,5 +1,6 @@
 package com.example.projekt_licencjacki
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -34,6 +35,7 @@ class Sala: AppCompatActivity() {
     //koniec menu
     private lateinit var binding: SalaViewBinding
     private val formatter = SimpleDateFormat("dd.MM.yyyy")
+    var room_id:String=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = SalaViewBinding.inflate(layoutInflater)
@@ -44,6 +46,9 @@ class Sala: AppCompatActivity() {
         }
         if(intent.hasExtra("USER")){
             var user_email=intent.hasExtra("USER")
+        }
+        if(intent.hasExtra("ROOM_ID")){
+            room_id=intent.getStringExtra("ROOM_ID")!!
 
         }
         if(intent.hasExtra("NUMER_SALI")){

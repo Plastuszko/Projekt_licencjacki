@@ -219,7 +219,8 @@ private suspend fun createroom(): List<Sala_constructor> {
             current_date,
             chosen_hour,
             roomType,
-            roomStatus
+            roomStatus,
+            room_id
         )
         roomsList.add(sala)
 

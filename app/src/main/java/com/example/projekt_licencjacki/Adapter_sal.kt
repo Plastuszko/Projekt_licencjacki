@@ -34,6 +34,7 @@ class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_const
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+
             holder.status_sali.text=lista_sal[position].status
             holder.room_number.text=lista_sal[position].room_number
             holder.capacity.text=holder.capacity.text.toString()+" "+ lista_sal[position].capacity.toString()
@@ -41,6 +42,7 @@ class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_const
             holder.ikonka_sali.setImageResource(lista_sal[position].ikonka_sali)
             holder.itemView.rootView.setOnClickListener{
                 var intent=Intent(c,Sala::class.java)
+                intent.putExtra("ROOM_ID",lista_sal[position].room_id)
                 intent.putExtra("NUMER_SALI",lista_sal[position].room_number)
                 intent.putExtra("ILOSC_MIEJSC",lista_sal[position].capacity.toString())
                 intent.putExtra("RODZAJ_SALI",lista_sal[position].type)
