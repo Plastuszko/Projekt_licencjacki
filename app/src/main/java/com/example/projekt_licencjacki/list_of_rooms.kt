@@ -199,14 +199,10 @@ private suspend fun createroom(): List<Sala_constructor> {
         Log.d(TAG,"działa")
 
     for (i in room_ids.indices) {
-        Log.d(TAG,"room_ids:"+ room_ids.indices)
         val room_id=room_ids[i]
         val roomNumber = Map_of_numbers[room_id]!!
-        Log.d(TAG,"roomNumber: "+roomNumber)
         val roomCapacity = Map_of_capacities[room_id]!!
-        Log.d(TAG,"roomCapacity: "+roomCapacity)
         val roomType = Map_of_types[room_id]!!
-        Log.d(TAG,"roomType: "+roomType)
         var roomStatus=" "
         Log.d(TAG,"status: "+Map_of_status[room_id])
         if(Map_of_status[room_id]==false){
@@ -216,7 +212,7 @@ private suspend fun createroom(): List<Sala_constructor> {
         }
         Log.d(TAG, "room_status: $Map_of_status")
 
-
+        Log.d(TAG,"current date: $current_date")
         val sala = Sala_constructor(
             roomNumber,
             roomCapacity,

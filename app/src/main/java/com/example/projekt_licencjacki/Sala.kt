@@ -42,7 +42,10 @@ class Sala: AppCompatActivity() {
             val color = ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
             binding.bookARoomButton.setBackgroundColor(color)
         }
+        if(intent.hasExtra("USER")){
+            var user_email=intent.hasExtra("USER")
 
+        }
         if(intent.hasExtra("NUMER_SALI")){
             binding.roomNumber.text=intent.getStringExtra("NUMER_SALI")
         }
@@ -53,7 +56,7 @@ class Sala: AppCompatActivity() {
             binding.typeOfRoom.text=binding.typeOfRoom.text.toString()+" "+intent.getStringExtra("RODZAJ_SALI")
         }
         if(intent.hasExtra("CHOSEN_DATE")){
-            displayFormattedDate(intent.getLongExtra("CHOSEN_DATE",0))
+            binding.displayDate.text=intent.getStringExtra("CHOSEN_DATE")
         }
         if(intent.hasExtra("CHOSEN_HOUR")){
                 binding.displayHour.text=intent.getStringExtra("CHOSEN_HOUR")
@@ -79,8 +82,5 @@ class Sala: AppCompatActivity() {
 }
 
 
-    private fun displayFormattedDate(timestamp: Long){//nadpisuje tekst wybranej daty
-        binding.displayDate.text=formatter.format(timestamp)
-    }
 
 }

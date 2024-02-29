@@ -96,9 +96,7 @@ class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSe
 
 
         binding.chooseDateButton.setOnClickListener{
-            Log.d(TAG,"before:$ $current_date")
             DatePickerDialog(this,this,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show()
-            Log.d(TAG,"after : $current_date")
         }
         //↓↓↓wygenerowanie aktualnej listy pokoi
 
@@ -198,18 +196,13 @@ class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSe
         if(Map_of_status.isNotEmpty()){
             Log.d(TAG,"działa")
 
+            Log.d(TAG,"current date: $current_date")
             for (i in room_ids.indices) {
-                Log.d(TAG,"room_ids:"+ room_ids.indices)
                 val room_id=room_ids[i]
                 val roomNumber = Map_of_numbers[room_id]!!
-                Log.d(TAG,"roomNumber: "+roomNumber)
                 val roomCapacity = Map_of_capacities[room_id]!!
-                Log.d(TAG,"roomCapacity: "+roomCapacity)
                 val roomType = Map_of_types[room_id]!!
-                Log.d(TAG,"roomType: "+roomType)
                 var roomStatus=""
-                Log.d(TAG,"status: "+Map_of_status[room_id])
-
                 Log.d(TAG, "room_status: $Map_of_status")
 
 
