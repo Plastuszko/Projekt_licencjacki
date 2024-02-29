@@ -13,11 +13,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.projekt_licencjacki.Dane.Sala_constructor
 import com.example.projekt_licencjacki.databinding.ListOfRoomsBinding
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -59,11 +62,8 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var db = Firebase.firestore
     var Map_of_status: MutableMap <String,Any> = mutableMapOf()
     var Map_of_numbers: MutableMap <String,String> = mutableMapOf()
-    var rooms_numbers = ArrayList<String>()
     var Map_of_types: MutableMap<String,String> = mutableMapOf()
-    var rooms_types= ArrayList<String>()
     var Map_of_capacities: MutableMap<String,Int> = mutableMapOf()
-    var rooms_capacities=ArrayList<String>()
     var room_ids=ArrayList<String>()
     //↓↓ustawia format wyświetlanej daty
     private val formatter =SimpleDateFormat("dd.MM.yyyy")
@@ -72,7 +72,10 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         Log.d(TAG,"first current_date: $current_date")
         //↓↓↓zczytuje i zapisuje do odpowiednich list zmienne z bazy danych
-        check_data()
+        lifecycleScope.launch {
+            check_data()
+            reload_rooms()
+        }
 
 
         //---------------------------------------------------------------------
@@ -162,13 +165,15 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     //----------------------------------------------------------
 
 private fun createroom(): List<Sala_constructor> {
-
+    check_data()
 
 
     val roomsList = mutableListOf<Sala_constructor>()
     if(Map_of_status.isNotEmpty()){
-        Log.d(TAG,"room_ids:"+room_ids.size.toString())
+        Log.d(TAG,"działa")
+
     for (i in room_ids.indices) {
+        Log.d(TAG,"room_ids:"+ room_ids.indices)
         val room_id=room_ids[i]
         val roomNumber = Map_of_numbers[room_id]!!
         Log.d(TAG,"roomNumber: "+roomNumber)
@@ -197,7 +202,7 @@ private fun createroom(): List<Sala_constructor> {
         roomsList.add(sala)
 
     }
-    }else{}
+    }
     //usuwa dane aby nie wyśiwetlać kila razy tej samej sali
     room_ids.clear()
     Map_of_numbers.clear()
@@ -228,7 +233,6 @@ private fun createroom(): List<Sala_constructor> {
     }
     //--------------------------
     fun reload_rooms(){
-        check_data()
         Log.d(TAG,current_date)
 
         if(chosen_hour!=" ") {
@@ -289,6 +293,10 @@ private fun createroom(): List<Sala_constructor> {
                                     }
 
                                 }
+                            }
+
+                            .addOnFailureListener { exception ->
+                                Log.e(TAG,"nie wgrano wartości hours")
                             }
                     }
                 }
