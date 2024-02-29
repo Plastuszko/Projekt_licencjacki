@@ -35,6 +35,7 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item?.itemId==R.id.my_profile_menu_button){
             var intent= Intent(this,list_of_rooms_user_profile::class.java)
+            intent.putExtra("USER",user_email)
             this.startActivity(intent)
 
         }
@@ -57,6 +58,7 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         return super.onOptionsItemSelected(item)
     }
     //koniec menu
+    var user_email: String =""
     val calendar= Calendar.getInstance()
     var chosen_hour=" "
     private lateinit var binding: ListOfRoomsBinding
@@ -70,6 +72,10 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     private val formatter =SimpleDateFormat("dd.MM.yyyy")
     var current_date=formatter.format(calendar.timeInMillis)
     override fun onCreate(savedInstanceState: Bundle?) {
+        if(intent.hasExtra("USER")){
+            user_email=intent.getStringExtra("USER")!!
+            Toast.makeText(this,"Hi, $user_email",Toast.LENGTH_SHORT).show()
+        }
 
 
         Log.d(TAG,"first current_date: $current_date")
