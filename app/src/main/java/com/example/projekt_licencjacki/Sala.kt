@@ -48,6 +48,7 @@ class Sala: AppCompatActivity() {
     var booked:Boolean = false
     var current_date=""
     var chosen_hour=""
+    var user_email=""
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -84,20 +85,16 @@ class Sala: AppCompatActivity() {
             binding.roomIcon.setImageResource(R.mipmap.computer_icon)
         }
         if(intent.hasExtra("USER")){
-            var user_email=intent.hasExtra("USER")
+            user_email=intent.getStringExtra("USER")!!
         }
         if(intent.hasExtra("ROOM_ID")){
-            room_id=intent.getStringExtra("ROOM_ID")!!
+            room_id=intent.getStringExtra("ROOM_ID").toString()
             Log.d(TAG,room_id)
             check_data(chosen_hour)
         }
         binding.bookARoomButton.setOnClickListener(){
             check_data(chosen_hour)
-            if(binding.bookARoomButton.text=="BOOK A ROOM"){
-                binding.bookARoomButton.text="BOOKED"
-                val color = ContextCompat.getColor(this,R.color.chosen)
-                binding.bookARoomButton.setBackgroundColor(color)
-            }
+
         }
 
 
@@ -115,16 +112,90 @@ class Sala: AppCompatActivity() {
                     // Pobierz dane dokumentu
                     val documentData = document.data
 
-                    // Sprawdź, czy dokument zawiera wybraną godzinę
+                    // Sprawdź, czy dokument zawiera klucz "Hours"
                     if (documentData.containsKey("Hours")) {
                         val hoursData = documentData["Hours"] as? Map<String, Map<String, Any>>
 
-                        // Sprawdź, czy wybrana godzina istnieje w danych
-                        if (hoursData?.containsKey(chosen_hour) == true) {
-                            val chosenHourData = hoursData[chosen_hour] as? Map<String, Any>
+                        // Sprawdź, czy istnieje klucz, który zawiera wybraną godzinę
+                        val matchingHourKey = hoursData?.keys?.find { it.contains(chosen_hour) }
 
-                            // Loguj dane tylko dla wybranej godziny
-                            Log.d(TAG, "Document data for $chosen_hour: $chosenHourData")
+                        if (matchingHourKey != null) {
+                            val chosenHourData = hoursData[matchingHourKey] as? Map<String, Any>
+
+                            // Pobierz wartości booked i who z wybranej godziny
+                            val booked = chosenHourData?.get("booked") as? Boolean
+                            val who = chosenHourData?.get("who") as? String
+                            Log.d(TAG,"Chosen hour: "+ chosen_hour)
+                            Log.d(TAG,"booked: $booked")
+                            Log.d(TAG,"Who: $who")
+                            if(booked==true&&who.equals(who.toString())){
+                                Log.d(TAG,"WORKS CANCEL RESERVATION")
+                                binding.bookARoomButton.text="CANCEL RESERVATION"
+                                val color =ContextCompat.getColor(this,R.color.chosen)
+                                binding.bookARoomButton.setBackgroundColor(color)
+                            }else if(booked==true&&who.toString()!=user_email){
+                                Log.d(TAG,"BOOKED")
+                                binding.bookARoomButton.text="BOOKED"
+                                val color =ContextCompat.getColor(this,R.color.busy)
+                                binding.bookARoomButton.setBackgroundColor(color)
+
+                            }else if(booked==false){
+                                Log.d(TAG,"BOOK A ROOM")
+                                binding.bookARoomButton.text="BOOK A ROOM"
+                                val color =ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
+                                binding.bookARoomButton.setBackgroundColor(color)
+                            }
+//                            if(binding.bookARoomButton.text=="BOOK A ROOM"){
+//                                binding.bookARoomButton.text="BOOKED"
+//                                val color = ContextCompat.getColor(this,R.color.chosen)
+//                                binding.bookARoomButton.setBackgroundColor(color)
+//                            }
+                            // Loguj wartości booked i who
+                        } else {
+                            Log.d(TAG, "Chosen hour $chosen_hour not found in document")
+                        }
+                    } else {
+                        Log.d(TAG, "Document does not contain 'Hours' data")
+                    }
+                }
+            }
+    }
+    private fun change_data(chosen_hour: String, newBooked: Boolean, newWho: String) {
+        Log.d(TAG, "Changing data for room_id: $room_id, chosen_hour: $chosen_hour")
+
+        db.collection("rooms").document(room_id).collection("Days")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    // Pobierz dane dokumentu
+                    val documentData = document.data
+
+                    // Sprawdź, czy dokument zawiera klucz "Hours"
+                    if (documentData.containsKey("Hours")) {
+                        val hoursData = documentData["Hours"] as? MutableMap<String, Map<String, Any>>
+
+                        // Sprawdź, czy istnieje klucz, który zawiera wybraną godzinę
+                        val matchingHourKey = hoursData?.keys?.find { it.contains(chosen_hour) }
+
+                        if (matchingHourKey != null) {
+                            // Zaktualizuj dane w mapie
+                            val chosenHourData = hoursData[matchingHourKey] as? MutableMap<String, Any>
+                            chosenHourData?.apply {
+                                put("booked", newBooked)
+                                put("who", newWho)
+                            }
+
+                            // Zaktualizuj dane w Firestore
+                            db.collection("rooms").document(room_id).collection("Days")
+                                .document(document.id)
+                                .update("Hours", hoursData)
+                                .addOnSuccessListener {
+                                    Log.d(TAG, "Data updated successfully.")
+                                    // Dodaj kod aktualizacji interfejsu użytkownika (jeśli to konieczne)
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e(TAG, "Error updating data", e)
+                                }
                         } else {
                             Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                         }
