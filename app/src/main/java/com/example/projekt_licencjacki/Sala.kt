@@ -59,14 +59,7 @@ class Sala: AppCompatActivity() {
 //            val color = ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
 //            binding.bookARoomButton.setBackgroundColor(color)
 //        }
-        if(intent.hasExtra("USER")){
-            var user_email=intent.hasExtra("USER")
-        }
-        if(intent.hasExtra("ROOM_ID")){
-            room_id=intent.getStringExtra("ROOM_ID")!!
-            Log.d(TAG,room_id)
-            check_data()
-        }
+
         if(intent.hasExtra("NUMER_SALI")){
             binding.roomNumber.text=intent.getStringExtra("NUMER_SALI")
         }
@@ -90,8 +83,16 @@ class Sala: AppCompatActivity() {
         if(intent.getStringExtra("RODZAJ_SALI")=="laboratory"){
             binding.roomIcon.setImageResource(R.mipmap.computer_icon)
         }
-
+        if(intent.hasExtra("USER")){
+            var user_email=intent.hasExtra("USER")
+        }
+        if(intent.hasExtra("ROOM_ID")){
+            room_id=intent.getStringExtra("ROOM_ID")!!
+            Log.d(TAG,room_id)
+            check_data(chosen_hour)
+        }
         binding.bookARoomButton.setOnClickListener(){
+            check_data(chosen_hour)
             if(binding.bookARoomButton.text=="BOOK A ROOM"){
                 binding.bookARoomButton.text="BOOKED"
                 val color = ContextCompat.getColor(this,R.color.chosen)
@@ -104,17 +105,36 @@ class Sala: AppCompatActivity() {
 
 }
 
-    private fun check_data(){
-        Log.d(TAG,"Checking data from room_id: "+room_id)
+    private fun check_data(chosen_hour: String) {
+        Log.d(TAG, "Checking data from room_id: $room_id")
+
         db.collection("rooms").document(room_id).collection("Days")
             .get()
             .addOnSuccessListener { result ->
-                for(document in result){
-                    Log.d(TAG,"Document data: ${document.data}")
+                for (document in result) {
+                    // Pobierz dane dokumentu
+                    val documentData = document.data
+
+                    // Sprawdź, czy dokument zawiera wybraną godzinę
+                    if (documentData.containsKey("Hours")) {
+                        val hoursData = documentData["Hours"] as? Map<String, Map<String, Any>>
+
+                        // Sprawdź, czy wybrana godzina istnieje w danych
+                        if (hoursData?.containsKey(chosen_hour) == true) {
+                            val chosenHourData = hoursData[chosen_hour] as? Map<String, Any>
+
+                            // Loguj dane tylko dla wybranej godziny
+                            Log.d(TAG, "Document data for $chosen_hour: $chosenHourData")
+                        } else {
+                            Log.d(TAG, "Chosen hour $chosen_hour not found in document")
+                        }
+                    } else {
+                        Log.d(TAG, "Document does not contain 'Hours' data")
+                    }
                 }
             }
-
     }
+
 
 
 
