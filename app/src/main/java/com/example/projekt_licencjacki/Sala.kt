@@ -38,6 +38,7 @@ class Sala: AppCompatActivity() {
     var current_date=""
     var chosen_hour=""
     var user_email=""
+    lateinit var program_list:List<String>
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -80,6 +81,7 @@ class Sala: AppCompatActivity() {
         if(intent.hasExtra("ROOM_ID")){
             room_id=intent.getStringExtra("ROOM_ID").toString()
             Log.d(TAG,room_id)
+            uploadPrograms(room_id)
             check_data(chosen_hour,current_date)
         }
         binding.bookARoomButton.setOnClickListener(){
@@ -230,6 +232,29 @@ class Sala: AppCompatActivity() {
             }
         }
     }
+    private fun uploadPrograms(room_id: String) {
+        db.collection("rooms").document(room_id).get()
+            .addOnSuccessListener { roomDocument ->
+                val programs = roomDocument.get("Programs") as? List<String>
+
+                if (programs != null) {
+                    // Tutaj możesz zrobić coś z listą programów, np. przypisać do odpowiedniej mapy
+                    // Możesz również użyć innej struktury danych, np. MutableList, aby przechowywać programy
+                    for (program in programs) {
+                        binding.programsList.append("\n$program")
+                    }
+
+                    // Przykład: Wypisanie programów dla danego pokoju
+                    Log.d(TAG, "Programs for room $room_id: $programs")
+                } else {
+                    Log.d(TAG, "No programs found for room $room_id")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Failed to fetch programs for room $room_id: ${exception.message}", exception)
+            }
+    }
+
 
 
 

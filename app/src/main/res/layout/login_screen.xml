@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".login_screen"
-    android:background="@drawable/background">
+    android:background="@drawable/water_background">
     
     <RelativeLayout
         android:layout_width="match_parent"
@@ -27,8 +27,8 @@
             android:layout_height="wrap_content"
             android:text="WELCOME"
             android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:textSize="32sp"
+            android:fontFamily="cursive"
+            android:textSize="64dp"
             android:textColor="@color/white"
             ></TextView>
 
