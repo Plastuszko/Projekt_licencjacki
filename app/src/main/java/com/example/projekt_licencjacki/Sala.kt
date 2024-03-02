@@ -45,7 +45,7 @@ class Sala: AppCompatActivity() {
     private val formatter = SimpleDateFormat("dd.MM.yyyy")
     var room_id:String=""
     var db = Firebase.firestore
-    var booked:Boolean = false
+    var booked_new:Boolean = false
     var current_date=""
     var chosen_hour=""
     var user_email=""
@@ -94,6 +94,23 @@ class Sala: AppCompatActivity() {
             check_data(chosen_hour)
         }
         binding.bookARoomButton.setOnClickListener(){
+            check_data(chosen_hour)
+            if(binding.bookARoomButton.text=="CANCEL RESERVATION"){
+                booked_new=false
+                change_data(chosen_hour,booked_new,"")
+                binding.bookARoomButton.text="BOOK A ROOM"
+                val color =ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
+                binding.bookARoomButton.setBackgroundColor(color)
+            }else if(binding.bookARoomButton.text=="BOOKED"){
+                Toast.makeText(this,"This room is reserved by someone else",Toast.LENGTH_SHORT).show()
+
+            }else if(binding.bookARoomButton.text=="BOOK A ROOM"){
+                booked_new=true
+                change_data(chosen_hour,booked_new,user_email)
+                binding.bookARoomButton.text="CANCEL RESERVATION"
+                val color =ContextCompat.getColor(this,R.color.chosen)
+                binding.bookARoomButton.setBackgroundColor(color)
+            }
             check_data(chosen_hour)
 
         }
