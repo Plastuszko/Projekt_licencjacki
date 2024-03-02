@@ -91,10 +91,10 @@ class Sala: AppCompatActivity() {
         if(intent.hasExtra("ROOM_ID")){
             room_id=intent.getStringExtra("ROOM_ID").toString()
             Log.d(TAG,room_id)
-            check_data(chosen_hour)
+            check_data(chosen_hour,current_date)
         }
         binding.bookARoomButton.setOnClickListener(){
-            check_data(chosen_hour)
+            check_data(chosen_hour,current_date)
             if(binding.bookARoomButton.text=="CANCEL RESERVATION"){
                 booked_new=false
                 change_data(chosen_hour,current_date,booked_new,"")
@@ -113,8 +113,8 @@ class Sala: AppCompatActivity() {
 
 }
 
-    private fun check_data(chosen_hour: String) {
-        Log.d(TAG, "Checking data from room_id: $room_id")
+    private fun check_data(chosen_hour: String, expectedDay: String) {
+        Log.d(TAG, "Checking data from room_id: $room_id, chosen_hour: $chosen_hour, expectedDay: $expectedDay")
 
         db.collection("rooms").document(room_id).collection("Days")
             .get()
@@ -123,34 +123,41 @@ class Sala: AppCompatActivity() {
                     // Pobierz dane dokumentu
                     val documentData = document.data
 
-                    // Sprawdź, czy dokument zawiera klucz "Hours"
-                    if (documentData.containsKey("Hours")) {
-                        val hoursData = documentData["Hours"] as? Map<String, Map<String, Any>>
+                    // Sprawdź, czy dokument zawiera klucz "Day"
+                    if (documentData.containsKey("Day")) {
+                        val day = documentData["Day"] as? String
 
-                        // Sprawdź, czy istnieje klucz, który zawiera wybraną godzinę
-                        val matchingHourKey = hoursData?.keys?.find { it.contains(chosen_hour) }
+                        if (day == expectedDay) {
+                            // Sprawdź, czy dokument zawiera klucz "Hours"
+                            if (documentData.containsKey("Hours")) {
+                                val hoursData = documentData["Hours"] as? Map<String, Map<String, Any>>
 
-                        if (matchingHourKey != null) {
-                            val chosenHourData = hoursData[matchingHourKey] as? Map<String, Any>
+                                // Sprawdź, czy istnieje klucz, który zawiera wybraną godzinę
+                                val matchingHourKey = hoursData?.keys?.find { it.contains(chosen_hour) }
 
-                            // Pobierz wartości booked i who z wybranej godziny
-                            val booked = chosenHourData?.get("booked") as? Boolean
-                            val who = chosenHourData?.get("who") as? String
-                            Log.d(TAG, "Chosen hour: $chosen_hour")
-                            Log.d(TAG, "booked: $booked")
-                            Log.d(TAG, "Who: $who")
+                                if (matchingHourKey != null) {
+                                    val chosenHourData = hoursData[matchingHourKey] as? Map<String, Any>
 
-                            // Aktualizuj przycisk na podstawie wyników
-                            updateButtonState(booked, who)
-                        } else {
-                            Log.d(TAG, "Chosen hour $chosen_hour not found in document")
+                                    // Pobierz wartości booked i who z wybranej godziny
+                                    val booked = chosenHourData?.get("booked") as? Boolean
+                                    val who = chosenHourData?.get("who") as? String
+
+                                    // Aktualizuj przycisk na podstawie wyników
+                                    updateButtonState(booked, who)
+                                } else {
+                                    Log.d(TAG, "Chosen hour $chosen_hour not found in document")
+                                }
+                            } else {
+                                Log.d(TAG, "Document does not contain 'Hours' data")
+                            }
                         }
                     } else {
-                        Log.d(TAG, "Document does not contain 'Hours' data")
+                        Log.d(TAG, "Document does not contain 'Day' data")
                     }
                 }
             }
     }
+
     private fun change_data(chosen_hour: String, expectedDay: String, newBooked: Boolean, newWho: String) {
         Log.d(TAG, "Changing data for room_id: $room_id, chosen_hour: $chosen_hour, expectedDay: $expectedDay")
 
