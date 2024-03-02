@@ -97,13 +97,13 @@ class Sala: AppCompatActivity() {
             check_data(chosen_hour)
             if(binding.bookARoomButton.text=="CANCEL RESERVATION"){
                 booked_new=false
-                change_data(chosen_hour,booked_new,"")
+                change_data(chosen_hour,current_date,booked_new,"")
             }else if(binding.bookARoomButton.text=="BOOKED"){
                 Toast.makeText(this,"This room is reserved by someone else",Toast.LENGTH_SHORT).show()
 
             }else if(binding.bookARoomButton.text=="BOOK A ROOM"){
                 booked_new=true
-                change_data(chosen_hour,booked_new,user_email)
+                change_data(chosen_hour,current_date,booked_new,user_email)
             }
 
         }
@@ -151,8 +151,8 @@ class Sala: AppCompatActivity() {
                 }
             }
     }
-    private fun change_data(chosen_hour: String, newBooked: Boolean, newWho: String) {
-        Log.d(TAG, "Changing data for room_id: $room_id, chosen_hour: $chosen_hour")
+    private fun change_data(chosen_hour: String, expectedDay: String, newBooked: Boolean, newWho: String) {
+        Log.d(TAG, "Changing data for room_id: $room_id, chosen_hour: $chosen_hour, expectedDay: $expectedDay")
 
         db.collection("rooms").document(room_id).collection("Days")
             .get()
@@ -161,39 +161,43 @@ class Sala: AppCompatActivity() {
                     // Pobierz dane dokumentu
                     val documentData = document.data
 
-                    // Sprawdź, czy dokument zawiera klucz "Hours"
-                    if (documentData.containsKey("Hours")) {
-                        val hoursData = documentData["Hours"] as? MutableMap<String, Map<String, Any>>
+                    // Sprawdź, czy dokument zawiera klucz "Hours" i "Day"
+                    if (documentData.containsKey("Hours") && documentData.containsKey("Day")) {
+                        val day = documentData["Day"] as? String
 
-                        // Sprawdź, czy istnieje klucz, który zawiera wybraną godzinę
-                        val matchingHourKey = hoursData?.keys?.find { it.contains(chosen_hour) }
+                        if (day == expectedDay) {
+                            val hoursData = documentData["Hours"] as? MutableMap<String, Map<String, Any>>
 
-                        if (matchingHourKey != null) {
-                            // Zaktualizuj dane w mapie
-                            val chosenHourData = hoursData[matchingHourKey] as? MutableMap<String, Any>
-                            chosenHourData?.apply {
-                                put("booked", newBooked)
-                                put("who", newWho)
+                            // Sprawdź, czy istnieje klucz, który zawiera wybraną godzinę
+                            val matchingHourKey = hoursData?.keys?.find { it.contains(chosen_hour) }
+
+                            if (matchingHourKey != null) {
+                                // Zaktualizuj dane w mapie
+                                val chosenHourData = hoursData[matchingHourKey] as? MutableMap<String, Any>
+                                chosenHourData?.apply {
+                                    put("booked", newBooked)
+                                    put("who", newWho)
+                                }
+
+                                // Zaktualizuj dane w Firestore
+                                db.collection("rooms").document(room_id).collection("Days")
+                                    .document(document.id)
+                                    .update("Hours", hoursData)
+                                    .addOnSuccessListener {
+                                        Log.d(TAG, "Data updated successfully.")
+
+                                        // Dodaj kod aktualizacji interfejsu użytkownika (jeśli to konieczne)
+                                        updateButtonState(newBooked, newWho)
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e(TAG, "Error updating data", e)
+                                    }
+                            } else {
+                                Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                             }
-
-                            // Zaktualizuj dane w Firestore
-                            db.collection("rooms").document(room_id).collection("Days")
-                                .document(document.id)
-                                .update("Hours", hoursData)
-                                .addOnSuccessListener {
-                                    Log.d(TAG, "Data updated successfully.")
-
-                                    // Dodaj kod aktualizacji interfejsu użytkownika (jeśli to konieczne)
-                                    updateButtonState(newBooked, newWho)
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.e(TAG, "Error updating data", e)
-                                }
-                        } else {
-                            Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                         }
                     } else {
-                        Log.d(TAG, "Document does not contain 'Hours' data")
+                        Log.d(TAG, "Document does not contain 'Hours' or 'Day' data")
                     }
                 }
             }
