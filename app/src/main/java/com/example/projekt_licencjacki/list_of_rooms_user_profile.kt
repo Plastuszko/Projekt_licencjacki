@@ -212,7 +212,9 @@ class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSe
                     current_date,
                     chosen_hour,
                     roomType,
-                    roomStatus
+                    roomStatus,
+                    room_id,
+                    user_email
                 )
                 roomsList.add(sala)
 
