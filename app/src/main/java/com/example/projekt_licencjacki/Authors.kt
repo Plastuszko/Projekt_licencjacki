@@ -52,6 +52,6 @@ class Authors: AppCompatActivity() {
         setContentView(binding.root)
         binding.author1.text= "https://pl.freepik.com/ikona/komputer_8319663#fromView=search&page=1&position=21&uuid=1b51e230-a4c5-45b9-8b9c-fc330effff1b -->Ikona autorstwa Steven Edward Simanjuntak"
         binding.author2.text="https://pl.freepik.com/ikona/prezentacja_13377868#fromView=search&page=1&position=12&uuid=ae01e6a9-0630-48f7-90b1-de48ca1b9e8c -->Ikona autorstwa VectorPortal"
-
+        binding.author3.text="https://pixabay.com/pl/users/ameliia-12205432/"
 }
 }

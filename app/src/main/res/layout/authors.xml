@@ -10,7 +10,7 @@
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Icon Authors :"/>
+        android:text="Icon authors :"/>
     <TextView
         android:id="@+id/author1"
         android:layout_width="wrap_content"
@@ -21,6 +21,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="login screen background image author :"
+        />
     <TextView
         android:id="@+id/author3"
         android:layout_width="wrap_content"
