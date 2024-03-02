@@ -98,20 +98,13 @@ class Sala: AppCompatActivity() {
             if(binding.bookARoomButton.text=="CANCEL RESERVATION"){
                 booked_new=false
                 change_data(chosen_hour,booked_new,"")
-                binding.bookARoomButton.text="BOOK A ROOM"
-                val color =ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
-                binding.bookARoomButton.setBackgroundColor(color)
             }else if(binding.bookARoomButton.text=="BOOKED"){
                 Toast.makeText(this,"This room is reserved by someone else",Toast.LENGTH_SHORT).show()
 
             }else if(binding.bookARoomButton.text=="BOOK A ROOM"){
                 booked_new=true
                 change_data(chosen_hour,booked_new,user_email)
-                binding.bookARoomButton.text="CANCEL RESERVATION"
-                val color =ContextCompat.getColor(this,R.color.chosen)
-                binding.bookARoomButton.setBackgroundColor(color)
             }
-            check_data(chosen_hour)
 
         }
 
@@ -143,26 +136,12 @@ class Sala: AppCompatActivity() {
                             // Pobierz wartości booked i who z wybranej godziny
                             val booked = chosenHourData?.get("booked") as? Boolean
                             val who = chosenHourData?.get("who") as? String
-                            Log.d(TAG,"Chosen hour: "+ chosen_hour)
-                            Log.d(TAG,"booked: $booked")
-                            Log.d(TAG,"Who: $who")
+                            Log.d(TAG, "Chosen hour: $chosen_hour")
+                            Log.d(TAG, "booked: $booked")
+                            Log.d(TAG, "Who: $who")
 
-                            if(booked==true&&who.toString()==(user_email)){
-                                Log.d(TAG,"WORKS CANCEL RESERVATION")
-                                binding.bookARoomButton.text="CANCEL RESERVATION"
-                                val color =ContextCompat.getColor(this,R.color.chosen)
-                                binding.bookARoomButton.setBackgroundColor(color)
-                            }else if(booked==true&&who.toString()!=user_email){
-                                Log.d(TAG,"WORKS BOOKED")
-                                binding.bookARoomButton.text="BOOKED"
-                                val color =ContextCompat.getColor(this,R.color.busy)
-                                binding.bookARoomButton.setBackgroundColor(color)
-                            }else if(booked==false){
-                                Log.d(TAG,"WORKS BOOK A ROOM")
-                                binding.bookARoomButton.text="BOOK A ROOM"
-                                val color =ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
-                                binding.bookARoomButton.setBackgroundColor(color)
-                            }
+                            // Aktualizuj przycisk na podstawie wyników
+                            updateButtonState(booked, who)
                         } else {
                             Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                         }
@@ -203,7 +182,9 @@ class Sala: AppCompatActivity() {
                                 .update("Hours", hoursData)
                                 .addOnSuccessListener {
                                     Log.d(TAG, "Data updated successfully.")
+
                                     // Dodaj kod aktualizacji interfejsu użytkownika (jeśli to konieczne)
+                                    updateButtonState(newBooked, newWho)
                                 }
                                 .addOnFailureListener { e ->
                                     Log.e(TAG, "Error updating data", e)
@@ -217,7 +198,28 @@ class Sala: AppCompatActivity() {
                 }
             }
     }
-
+    private fun updateButtonState(booked: Boolean?, who: String?) {
+        when {
+            booked == true && who == user_email -> {
+                Log.d(TAG, "WORKS CANCEL RESERVATION")
+                binding.bookARoomButton.text = "CANCEL RESERVATION"
+                val color = ContextCompat.getColor(this, R.color.chosen)
+                binding.bookARoomButton.setBackgroundColor(color)
+            }
+            booked == true && who != user_email -> {
+                Log.d(TAG, "WORKS BOOKED")
+                binding.bookARoomButton.text = "BOOKED"
+                val color = ContextCompat.getColor(this, R.color.busy)
+                binding.bookARoomButton.setBackgroundColor(color)
+            }
+            booked == false -> {
+                Log.d(TAG, "WORKS BOOK A ROOM")
+                binding.bookARoomButton.text = "BOOK A ROOM"
+                val color = ContextCompat.getColor(this, R.color.BOOK_A_ROOM)
+                binding.bookARoomButton.setBackgroundColor(color)
+            }
+        }
+    }
 
 
 
