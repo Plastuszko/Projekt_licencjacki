@@ -33,6 +33,7 @@ class Sala: AppCompatActivity() {
     private val formatter = SimpleDateFormat("dd.MM.yyyy")
     var room_id:String=""
     var db = Firebase.firestore
+    var room_status:Boolean = false
     var booked_new:Boolean = false
     var current_date=""
     var chosen_hour=""
@@ -83,13 +84,13 @@ class Sala: AppCompatActivity() {
         }
         binding.bookARoomButton.setOnClickListener(){
             check_data(chosen_hour,current_date)
-            if(binding.bookARoomButton.text=="CANCEL RESERVATION"){
+            if(binding.bookARoomButton.text=="CANCEL RESERVATION"&&room_status){
                 booked_new=false
                 change_data(chosen_hour,current_date,booked_new,"")
             }else if(binding.bookARoomButton.text=="BOOKED"){
                 Toast.makeText(this,"This room is reserved by someone else",Toast.LENGTH_SHORT).show()
 
-            }else if(binding.bookARoomButton.text=="BOOK A ROOM"){
+            }else if(binding.bookARoomButton.text=="BOOK A ROOM"&&!room_status){
                 booked_new=true
                 change_data(chosen_hour,current_date,booked_new,user_email)
             }
@@ -129,9 +130,10 @@ class Sala: AppCompatActivity() {
                                     // Pobierz wartości booked i who z wybranej godziny
                                     val booked = chosenHourData?.get("booked") as? Boolean
                                     val who = chosenHourData?.get("who") as? String
-
-                                    // Aktualizuj przycisk na podstawie wyników
                                     updateButtonState(booked, who)
+                                    room_status=booked!!
+                                    // Aktualizuj przycisk na podstawie wyników
+
                                 } else {
                                     Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                                 }
@@ -169,24 +171,31 @@ class Sala: AppCompatActivity() {
                             if (matchingHourKey != null) {
                                 // Zaktualizuj dane w mapie
                                 val chosenHourData = hoursData[matchingHourKey] as? MutableMap<String, Any>
-                                chosenHourData?.apply {
-                                    put("booked", newBooked)
-                                    put("who", newWho)
+
+                                // Sprawdź, czy 'who' jest takie samo jak 'user_email' przed dokonaniem zmiany
+                                val currentWho = chosenHourData?.get("who") as? String
+                                if (currentWho == user_email||currentWho=="") {
+                                    chosenHourData?.apply {
+                                        put("booked", newBooked)
+                                        put("who", newWho)
+                                    }
+
+                                    // Zaktualizuj dane w Firestore
+                                    db.collection("rooms").document(room_id).collection("Days")
+                                        .document(document.id)
+                                        .update("Hours", hoursData)
+                                        .addOnSuccessListener {
+                                            Log.d(TAG, "Data updated successfully.")
+
+                                            // Dodaj kod aktualizacji interfejsu użytkownika (jeśli to konieczne)
+                                            updateButtonState(newBooked, newWho)
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e(TAG, "Error updating data", e)
+                                        }
+                                } else {
+                                    Log.d(TAG, "Current 'who' value is not equal to 'user_email'")
                                 }
-
-                                // Zaktualizuj dane w Firestore
-                                db.collection("rooms").document(room_id).collection("Days")
-                                    .document(document.id)
-                                    .update("Hours", hoursData)
-                                    .addOnSuccessListener {
-                                        Log.d(TAG, "Data updated successfully.")
-
-                                        // Dodaj kod aktualizacji interfejsu użytkownika (jeśli to konieczne)
-                                        updateButtonState(newBooked, newWho)
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e(TAG, "Error updating data", e)
-                                    }
                             } else {
                                 Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                             }
@@ -195,8 +204,10 @@ class Sala: AppCompatActivity() {
                         Log.d(TAG, "Document does not contain 'Hours' or 'Day' data")
                     }
                 }
+                check_data(chosen_hour, current_date)
             }
     }
+
     private fun updateButtonState(booked: Boolean?, who: String?) {
         when {
             booked == true && who == user_email -> {
