@@ -3,7 +3,7 @@ package com.example.projekt_licencjacki.Dane
 import com.example.projekt_licencjacki.R
 
 class Sala_constructor {
-
+    var user_email:String=""
     var room_id:String=""
     var day_id:String=""
     var room_number:String=""
@@ -15,7 +15,7 @@ class Sala_constructor {
     var ikonka_sali: Int=0
 
 
-     constructor(room_number: String,capacity: Int,current_date: String,chosen_hour: String,type:String,status: String){
+     constructor(room_number: String,capacity: Int,current_date: String,chosen_hour: String,type:String,status: String,){
          this.room_number=room_number
          this.capacity=capacity
          this.type=type
@@ -29,7 +29,8 @@ class Sala_constructor {
              ikonka_sali= R.mipmap.presentation_icon
          }
      }
-    constructor(room_number: String,capacity: Int,current_date: String,chosen_hour: String,type:String,status: String,room_id:String){
+    constructor(room_number: String,capacity: Int,current_date: String,chosen_hour: String,type:String,status: String,room_id:String,user_email:String){
+        this.user_email=user_email
         this.room_id=room_id
         this.room_number=room_number
         this.capacity=capacity

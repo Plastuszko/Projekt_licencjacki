@@ -191,8 +191,8 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     //----------------------------------------------------------
 
 private suspend fun createroom(): List<Sala_constructor> {
+    clear_data()
     check_data()
-
 
     val roomsList = mutableListOf<Sala_constructor>()
     if(Map_of_status.isNotEmpty()){
@@ -220,18 +220,15 @@ private suspend fun createroom(): List<Sala_constructor> {
             chosen_hour,
             roomType,
             roomStatus,
-            room_id
+            room_id,
+            user_email
         )
         roomsList.add(sala)
 
     }
     }
     //usuwa dane aby nie wyśiwetlać kila razy tej samej sali
-    room_ids.clear()
-    Map_of_numbers.clear()
-    Map_of_capacities.clear()
-    Map_of_types.clear()
-    Map_of_status.clear()
+//    clear_data()
     //-------------------------------------------------
     return roomsList
 }
@@ -315,6 +312,13 @@ private suspend fun createroom(): List<Sala_constructor> {
         } catch (exception: Exception) {
             Log.e(TAG, "Failed to fetch room data: ${exception.message}", exception)
         }
+    }
+    private fun clear_data(){
+        room_ids.clear()
+        Map_of_numbers.clear()
+        Map_of_capacities.clear()
+        Map_of_types.clear()
+        Map_of_status.clear()
     }
 }
 

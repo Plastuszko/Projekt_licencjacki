@@ -15,6 +15,7 @@ class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_const
 
 
     inner class MyViewHolder(private val binding: WyborSaliBinding): ViewHolder(binding.root){
+
         val room_number=binding.roomNumber
         val type_of_room=binding.typeOfRoom
         var capacity=binding.capacity
@@ -26,6 +27,7 @@ class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_const
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+
         val inflater= LayoutInflater.from(parent.context)
         val wyborSaliBinding = WyborSaliBinding.inflate(inflater,parent,false)
         return MyViewHolder(wyborSaliBinding)
@@ -34,7 +36,7 @@ class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_const
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-
+            val user_email=lista_sal[position].user_email
             holder.status_sali.text=lista_sal[position].status
             holder.room_number.text=lista_sal[position].room_number
             holder.capacity.text=holder.capacity.text.toString()+" "+ lista_sal[position].capacity.toString()
@@ -42,6 +44,7 @@ class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_const
             holder.ikonka_sali.setImageResource(lista_sal[position].ikonka_sali)
             holder.itemView.rootView.setOnClickListener{
                 var intent=Intent(c,Sala::class.java)
+                intent.putExtra("USER",user_email)
                 intent.putExtra("ROOM_ID",lista_sal[position].room_id)
                 intent.putExtra("NUMER_SALI",lista_sal[position].room_number)
                 intent.putExtra("ILOSC_MIEJSC",lista_sal[position].capacity.toString())

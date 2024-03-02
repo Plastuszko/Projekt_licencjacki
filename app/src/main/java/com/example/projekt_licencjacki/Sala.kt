@@ -85,7 +85,8 @@ class Sala: AppCompatActivity() {
             binding.roomIcon.setImageResource(R.mipmap.computer_icon)
         }
         if(intent.hasExtra("USER")){
-            user_email=intent.getStringExtra("USER")!!
+            user_email=intent.getStringExtra("USER").toString()
+            Log.d(TAG,"User email: $user_email")
         }
         if(intent.hasExtra("ROOM_ID")){
             room_id=intent.getStringExtra("ROOM_ID").toString()
@@ -128,29 +129,23 @@ class Sala: AppCompatActivity() {
                             Log.d(TAG,"Chosen hour: "+ chosen_hour)
                             Log.d(TAG,"booked: $booked")
                             Log.d(TAG,"Who: $who")
-                            if(booked==true&&who.equals(who.toString())){
+
+                            if(booked==true&&who.toString()==(user_email)){
                                 Log.d(TAG,"WORKS CANCEL RESERVATION")
                                 binding.bookARoomButton.text="CANCEL RESERVATION"
                                 val color =ContextCompat.getColor(this,R.color.chosen)
                                 binding.bookARoomButton.setBackgroundColor(color)
                             }else if(booked==true&&who.toString()!=user_email){
-                                Log.d(TAG,"BOOKED")
+                                Log.d(TAG,"WORKS BOOKED")
                                 binding.bookARoomButton.text="BOOKED"
                                 val color =ContextCompat.getColor(this,R.color.busy)
                                 binding.bookARoomButton.setBackgroundColor(color)
-
                             }else if(booked==false){
-                                Log.d(TAG,"BOOK A ROOM")
+                                Log.d(TAG,"WORKS BOOK A ROOM")
                                 binding.bookARoomButton.text="BOOK A ROOM"
                                 val color =ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
                                 binding.bookARoomButton.setBackgroundColor(color)
                             }
-//                            if(binding.bookARoomButton.text=="BOOK A ROOM"){
-//                                binding.bookARoomButton.text="BOOKED"
-//                                val color = ContextCompat.getColor(this,R.color.chosen)
-//                                binding.bookARoomButton.setBackgroundColor(color)
-//                            }
-                            // Loguj wartości booked i who
                         } else {
                             Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                         }
