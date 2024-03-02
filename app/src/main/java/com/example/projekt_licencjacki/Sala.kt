@@ -1,8 +1,10 @@
 package com.example.projekt_licencjacki
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -13,9 +15,15 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projekt_licencjacki.databinding.SalaViewBinding
 import com.example.projekt_licencjacki.databinding.WyborSaliBinding
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 
 class Sala: AppCompatActivity() {
@@ -36,20 +44,28 @@ class Sala: AppCompatActivity() {
     private lateinit var binding: SalaViewBinding
     private val formatter = SimpleDateFormat("dd.MM.yyyy")
     var room_id:String=""
+    var db = Firebase.firestore
+    var booked:Boolean = false
+    var current_date=""
+    var chosen_hour=""
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = SalaViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        if(binding.bookARoomButton.text=="BOOK A ROOM"){
-            val color = ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
-            binding.bookARoomButton.setBackgroundColor(color)
-        }
+
+
+//        if(binding.bookARoomButton.text=="BOOK A ROOM"){
+//            val color = ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
+//            binding.bookARoomButton.setBackgroundColor(color)
+//        }
         if(intent.hasExtra("USER")){
             var user_email=intent.hasExtra("USER")
         }
         if(intent.hasExtra("ROOM_ID")){
             room_id=intent.getStringExtra("ROOM_ID")!!
-
+            Log.d(TAG,room_id)
+            check_data()
         }
         if(intent.hasExtra("NUMER_SALI")){
             binding.roomNumber.text=intent.getStringExtra("NUMER_SALI")
@@ -62,9 +78,11 @@ class Sala: AppCompatActivity() {
         }
         if(intent.hasExtra("CHOSEN_DATE")){
             binding.displayDate.text=intent.getStringExtra("CHOSEN_DATE")
+            current_date=intent.getStringExtra("CHOSEN_DATE").toString()
         }
         if(intent.hasExtra("CHOSEN_HOUR")){
                 binding.displayHour.text=intent.getStringExtra("CHOSEN_HOUR")
+                chosen_hour=intent.getStringExtra("CHOSEN_HOUR").toString()
         }
         if(intent.getStringExtra("RODZAJ_SALI")=="lecture"){
             binding.roomIcon.setImageResource(R.mipmap.presentation_icon)
@@ -85,6 +103,18 @@ class Sala: AppCompatActivity() {
 
 
 }
+
+    private fun check_data(){
+        Log.d(TAG,"Checking data from room_id: "+room_id)
+        db.collection("rooms").document(room_id).collection("Days")
+            .get()
+            .addOnSuccessListener { result ->
+                for(document in result){
+                    Log.d(TAG,"Document data: ${document.data}")
+                }
+            }
+
+    }
 
 
 
