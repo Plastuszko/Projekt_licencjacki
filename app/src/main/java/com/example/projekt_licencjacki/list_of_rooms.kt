@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.projekt_licencjacki.Dane.Sala_constructor
 import com.example.projekt_licencjacki.databinding.ListOfRoomsBinding
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot

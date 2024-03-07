@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.example.projekt_licencjacki.Dane.Sala_constructor
 import com.example.projekt_licencjacki.databinding.WyborSaliBinding
 
 class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_constructor>): RecyclerView.Adapter<Adapter_sal.MyViewHolder>() {
@@ -20,7 +19,6 @@ class Adapter_sal(private var c: Context, private val lista_sal: List<Sala_const
         var capacity=binding.capacity
         val status_sali=binding.statusSali
         var ikonka_sali=binding.ikonkaSali
-
 
     }
 

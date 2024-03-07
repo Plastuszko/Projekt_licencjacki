@@ -1,4 +1,4 @@
-package com.example.projekt_licencjacki.Dane
+package com.example.projekt_licencjacki
 
 import com.example.projekt_licencjacki.R
 
