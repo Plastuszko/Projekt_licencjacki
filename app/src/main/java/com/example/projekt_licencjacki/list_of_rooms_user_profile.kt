@@ -23,11 +23,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     //kodowanie menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_details,menu)
+
+        menuInflater.inflate(R.menu.menu_details, menu)
+        lifecycleScope.launch {
+            val adminStatus = check_admin()
+
+            Log.d(TAG, "admin==$adminStatus")
+            if (adminStatus == true) {
+
+                menu?.findItem(R.id.add_rooms)?.isVisible = true
+                Log.d(TAG, menu?.findItem(R.id.add_rooms)?.isVisible.toString())
+            } else if (adminStatus == false) {
+
+                menu?.findItem(R.id.add_rooms)?.isVisible = false
+                Log.d(TAG, menu?.findItem(R.id.add_rooms)?.isVisible.toString())
+            }
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -312,7 +329,25 @@ class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSe
         }
     }
 
-
+    private suspend fun check_admin(): Boolean {
+        return suspendCoroutine { continuation ->
+            db.collection("users")
+                .whereEqualTo("email", user_email)
+                .get()
+                .addOnSuccessListener { userData ->
+                    for (user in userData) {
+                        val adminStatus = user.getBoolean("admin") ?: false
+                        Log.d(TAG, "Uprawnienia użytkownika: $adminStatus")
+                        continuation.resume(adminStatus)
+                        return@addOnSuccessListener
+                    }
+                    continuation.resume(false) // If no user is found or admin field is not present
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resume(false)
+                }
+        }
+    }
 
 
 }

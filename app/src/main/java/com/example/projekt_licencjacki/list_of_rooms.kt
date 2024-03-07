@@ -100,7 +100,7 @@ override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         //↓↓↓pasek kodu odpowiadający za nadipsywanie danych na bieżąco
         lifecycleScope.launch {
             check_data()
-            reload_rooms()
+            reloadRooms()
         }
         //---------------------------------------------------------------------
         super.onCreate(savedInstanceState)
@@ -139,49 +139,49 @@ override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         binding.hour1Button.setOnClickListener{
             lifecycleScope.launch {
                 onButtonClick(binding.hour1Button)
-                reload_rooms()
+                reloadRooms()
             }
         }
 
         binding.hour2Button.setOnClickListener{
             lifecycleScope.launch {
                 onButtonClick(binding.hour2Button)
-                reload_rooms()
+                reloadRooms()
             }
         }
 
         binding.hour3Button.setOnClickListener{
             lifecycleScope.launch {
                 onButtonClick(binding.hour3Button)
-                reload_rooms()
+                reloadRooms()
             }
         }
 
         binding.hour4Button.setOnClickListener{
             lifecycleScope.launch {
                 onButtonClick(binding.hour4Button)
-                reload_rooms()
+                reloadRooms()
             }
         }
 
         binding.hour5Button.setOnClickListener{
             lifecycleScope.launch {
                 onButtonClick(binding.hour5Button)
-                reload_rooms()
+                reloadRooms()
             }
         }
 
         binding.hour6Button.setOnClickListener{
             lifecycleScope.launch {
                 onButtonClick(binding.hour6Button)
-                reload_rooms()
+                reloadRooms()
             }
         }
 
         binding.hour7Button.setOnClickListener{
             lifecycleScope.launch {
                 onButtonClick(binding.hour7Button)
-                reload_rooms()
+                reloadRooms()
             }
         }
 
@@ -262,7 +262,7 @@ private suspend fun createroom(): List<Sala_constructor> {
             current_date = formatter.format(calendar.timeInMillis)
             displayFormattedDate(current_date)
             //------------------------------------------------------------
-            reload_rooms()
+            reloadRooms()
         }
     }
     //↓↓↓nadpisuje tekst wybranej daty
@@ -270,7 +270,7 @@ private suspend fun createroom(): List<Sala_constructor> {
         binding.displayDate.text = timestamp
     }
 
-    suspend fun reload_rooms() {
+    suspend fun reloadRooms() {
         Log.d(TAG, current_date)
 
         if (chosen_hour != " ") {

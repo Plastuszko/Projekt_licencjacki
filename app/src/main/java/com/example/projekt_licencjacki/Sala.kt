@@ -9,15 +9,34 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.projekt_licencjacki.databinding.SalaViewBinding
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class Sala: AppCompatActivity() {
     //kodowanie menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_details,menu)
+
+        menuInflater.inflate(R.menu.menu_details, menu)
+        lifecycleScope.launch {
+            val adminStatus = check_admin()
+
+            Log.d(TAG, "admin==$adminStatus")
+            if (adminStatus == true) {
+
+                menu?.findItem(R.id.add_rooms)?.isVisible = true
+                Log.d(TAG, menu?.findItem(R.id.add_rooms)?.isVisible.toString())
+            } else if (adminStatus == false) {
+
+                menu?.findItem(R.id.add_rooms)?.isVisible = false
+                Log.d(TAG, menu?.findItem(R.id.add_rooms)?.isVisible.toString())
+            }
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -255,7 +274,25 @@ class Sala: AppCompatActivity() {
             }
     }
 
-
+    private suspend fun check_admin(): Boolean {
+        return suspendCoroutine { continuation ->
+            db.collection("users")
+                .whereEqualTo("email", user_email)
+                .get()
+                .addOnSuccessListener { userData ->
+                    for (user in userData) {
+                        val adminStatus = user.getBoolean("admin") ?: false
+                        Log.d(TAG, "Uprawnienia użytkownika: $adminStatus")
+                        continuation.resume(adminStatus)
+                        return@addOnSuccessListener
+                    }
+                    continuation.resume(false) // If no user is found or admin field is not present
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resume(false)
+                }
+        }
+    }
 
 
 }
