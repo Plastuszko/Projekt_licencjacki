@@ -15,8 +15,14 @@
         android:title="Authors"
         />
     <item
+        android:id="@+id/add_rooms"
+        android:title="Add/Reset rooms"
+        android:visible="false"
+        />
+    <item
         android:id="@+id/log_out_menu_button"
         android:title="Log out"
         />
+
 
 </menu>
