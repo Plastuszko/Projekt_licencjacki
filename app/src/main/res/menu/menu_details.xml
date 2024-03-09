@@ -15,7 +15,7 @@
         android:title="Authors"
         />
     <item
-        android:id="@+id/add_rooms"
+        android:id="@+id/add_reset_rooms_menu_button"
         android:title="Add/Reset rooms"
         android:visible="false"
         />

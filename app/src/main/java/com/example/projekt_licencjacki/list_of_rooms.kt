@@ -27,7 +27,6 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
-    var admin=false
 //kodowanie menu
 override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 
@@ -38,12 +37,12 @@ override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         Log.d(TAG, "admin==$adminStatus")
         if (adminStatus == true) {
 
-            menu?.findItem(R.id.add_rooms)?.isVisible = true
-            Log.d(TAG, menu?.findItem(R.id.add_rooms)?.isVisible.toString())
+            menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = true
+            Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
         } else if (adminStatus == false) {
 
-            menu?.findItem(R.id.add_rooms)?.isVisible = false
-            Log.d(TAG, menu?.findItem(R.id.add_rooms)?.isVisible.toString())
+            menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = false
+            Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
         }
     }
     return super.onCreateOptionsMenu(menu)
@@ -63,6 +62,11 @@ override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         if(item?.itemId==R.id.authors){
             var intent = Intent(this,Authors::class.java)
             this.startActivity(intent)
+        }
+        if(item?.itemId==R.id.add_reset_rooms_menu_button){
+            var intent = Intent(this,add_new_rooms::class.java)
+            this.startActivity(intent)
+
         }
         if(item?.itemId==R.id.log_out_menu_button){
             var intent= Intent(this,login_screen::class.java)

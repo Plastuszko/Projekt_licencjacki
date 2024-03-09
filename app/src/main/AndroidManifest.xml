@@ -16,13 +16,13 @@
         android:theme="@style/Theme.Projekt_licencjacki"
         tools:targetApi="29">
         <activity
-            android:screenOrientation="locked"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:name=".list_of_rooms"
             android:label="LIST OF ROOMS"
             android:exported="false" />
         <activity
-            android:screenOrientation="locked"
+            android:screenOrientation="portrait"
             android:noHistory="true"
             android:name=".login_screen"
             android:exported="true">
@@ -34,24 +34,32 @@
                 </intent-filter>
         </activity>
         <activity
-            android:screenOrientation="locked"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:name=".Sala"
             android:exported="false"
             />
         <activity
-            android:screenOrientation="locked"
+            android:screenOrientation="portrait"
             android:name=".list_of_rooms_user_profile"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:label="USER PROFILE"
             android:exported="false"
             />
         <activity
-            android:screenOrientation="locked"
+            android:screenOrientation="portrait"
             android:name=".Authors"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:label="AUTHORS"
             android:exported="false"
+            />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".add_new_rooms"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:label="Add/Reset Rooms"
+            android:exported="false"
+
             />
     </application>
 

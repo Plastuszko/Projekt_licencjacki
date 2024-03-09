@@ -37,12 +37,12 @@ class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSe
             Log.d(TAG, "admin==$adminStatus")
             if (adminStatus == true) {
 
-                menu?.findItem(R.id.add_rooms)?.isVisible = true
-                Log.d(TAG, menu?.findItem(R.id.add_rooms)?.isVisible.toString())
+                menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = true
+                Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
             } else if (adminStatus == false) {
 
-                menu?.findItem(R.id.add_rooms)?.isVisible = false
-                Log.d(TAG, menu?.findItem(R.id.add_rooms)?.isVisible.toString())
+                menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = false
+                Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
             }
         }
         return super.onCreateOptionsMenu(menu)
