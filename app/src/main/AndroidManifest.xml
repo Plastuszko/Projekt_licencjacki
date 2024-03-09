@@ -50,7 +50,7 @@
             android:screenOrientation="locked"
             android:name=".Authors"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:label="Authors"
+            android:label="AUTHORS"
             android:exported="false"
             />
     </application>

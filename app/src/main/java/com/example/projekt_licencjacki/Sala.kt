@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.projekt_licencjacki.databinding.SalaViewBinding
 import com.google.firebase.Firebase
@@ -48,8 +50,8 @@ class Sala: AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
     //koniec menu
+    var admin: Boolean=false
     private lateinit var binding: SalaViewBinding
-    private val formatter = SimpleDateFormat("dd.MM.yyyy")
     var room_id:String=""
     var db = Firebase.firestore
     var room_status:Boolean = false
@@ -65,10 +67,6 @@ class Sala: AppCompatActivity() {
         setContentView(binding.root)
 
 
-//        if(binding.bookARoomButton.text=="BOOK A ROOM"){
-//            val color = ContextCompat.getColor(this,R.color.BOOK_A_ROOM)
-//            binding.bookARoomButton.setBackgroundColor(color)
-//        }
 
         if(intent.hasExtra("NUMER_SALI")){
             binding.roomNumber.text=intent.getStringExtra("NUMER_SALI")
@@ -97,12 +95,25 @@ class Sala: AppCompatActivity() {
             user_email=intent.getStringExtra("USER").toString()
             Log.d(TAG,"User email: $user_email")
         }
+        lifecycleScope.launch {
+            admin=check_admin()
+            if(admin){
+                Log.d(TAG,"booked_by visiblility=visible")
+                binding.bookedBy.visibility= View.VISIBLE
+            } else{
+                Log.d(TAG, "booked_by visibility = gone")
+                binding.bookedBy.visibility = View.GONE
+            }
+        }
         if(intent.hasExtra("ROOM_ID")){
             room_id=intent.getStringExtra("ROOM_ID").toString()
             Log.d(TAG,room_id)
             uploadPrograms(room_id)
             check_data(chosen_hour,current_date)
+
         }
+
+
         binding.bookARoomButton.setOnClickListener(){
             check_data(chosen_hour,current_date)
             if(binding.bookARoomButton.text=="CANCEL RESERVATION"&&room_status){
@@ -117,9 +128,6 @@ class Sala: AppCompatActivity() {
             }
 
         }
-
-
-
 
 }
 
@@ -151,6 +159,7 @@ class Sala: AppCompatActivity() {
                                     // Pobierz wartości booked i who z wybranej godziny
                                     val booked = chosenHourData?.get("booked") as? Boolean
                                     val who = chosenHourData?.get("who") as? String
+                                    binding.bookedBy.text= "Booked by: "+who
                                     updateButtonState(booked, who)
                                     room_status=booked!!
                                     // Aktualizuj przycisk na podstawie wyników
@@ -195,7 +204,7 @@ class Sala: AppCompatActivity() {
 
                                 // Sprawdź, czy 'who' jest takie samo jak 'user_email' przed dokonaniem zmiany
                                 val currentWho = chosenHourData?.get("who") as? String
-                                if (currentWho == user_email||currentWho=="") {
+                                if (currentWho == user_email||currentWho==""||admin) {
                                     chosenHourData?.apply {
                                         put("booked", newBooked)
                                         put("who", newWho)
@@ -231,7 +240,7 @@ class Sala: AppCompatActivity() {
 
     private fun updateButtonState(booked: Boolean?, who: String?) {
         when {
-            booked == true && who == user_email -> {
+            booked == true && (who == user_email ||admin==true) -> {
                 Log.d(TAG, "WORKS CANCEL RESERVATION")
                 binding.bookARoomButton.text = "CANCEL RESERVATION"
                 val color = ContextCompat.getColor(this, R.color.chosen)

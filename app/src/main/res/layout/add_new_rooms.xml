@@ -61,34 +61,45 @@
             android:orientation="vertical">
 
             <CheckBox
+                android:id="@+id/checkbox_hour1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="8:30-10:00" />
             <CheckBox
+                android:id="@+id/checkbox_hour2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="10:10-11:40"/>
             <CheckBox
+                android:id="@+id/checkbox_hour3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="12:00-13:30"/>
             <CheckBox
+                android:id="@+id/checkbox_hour4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="13:40-15:20"/>
             <CheckBox
+                android:id="@+id/checkbox_hour5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="15:30-17:00"/>
             <CheckBox
+                android:id="@+id/checkbox_hour6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="17:10-18:40"/>
             <CheckBox
+                android:id="@+id/checkbox_hour7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="19:00-20:30"/>
-
+            <CheckBox
+                android:id="@+id/checkbox_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SELECT ALL"/>
 
         </LinearLayout>
 

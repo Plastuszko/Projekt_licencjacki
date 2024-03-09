@@ -75,6 +75,12 @@
             android:text="BOOK A ROOM"
             />
         <TextView
+            android:id="@+id/booked_by"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Booked by: "
+            android:visibility="gone"/>
+        <TextView
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
