@@ -174,34 +174,58 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
 
     private fun addRooms() {
-        for (roomId in roomId) {
-            val newDayId = generateRandomKey()
+        if (chosen_date.isNotEmpty()) {
+            for (roomId in roomId) {
+                val newDayId = generateRandomKey()
 
-            // Utwórz nowy dokument w kolekcji "Days" dla danego pokoju
-            val newDayDocumentRef = db.collection("rooms").document(roomId)
-                .collection("Days").document(newDayId)
+                // Utwórz nowy dokument w kolekcji "Days" dla danego pokoju
+                val newDayDocumentRef = db.collection("rooms").document(roomId)
+                    .collection("Days").document(newDayId)
 
-            // Tutaj możesz dostosować dane dla nowo utworzonego dokumentu
-            val dataToSet = hashMapOf<String, Any>(
-                "Day" to chosen_date,
-                "Hours" to Map_to_add[roomId]!!
-            )
+                // Tutaj możesz dostosować dane dla nowo utworzonego dokumentu
+                val dataToSet = hashMapOf<String, Any>(
+                    "Day" to chosen_date,
+                    "Hours" to Map_to_add[roomId]!!
+                )
 
-            // Ustaw dane w dokumencie
-            newDayDocumentRef.set(dataToSet)
-                .addOnSuccessListener {
-                    Log.d(TAG, "Nowy dzień dodany pomyślnie.")
-                    // Obsługa sukcesu, jeśli to konieczne
-                }
-                .addOnFailureListener { e ->
-                    Log.e(TAG, "Błąd podczas dodawania nowego dnia", e)
-                    // Obsługa błędu, jeśli to konieczne
-                }
+                // Sprawdź czy dany dzień już istnieje
+                db.collection("rooms").document(roomId).collection("Days")
+                    .whereEqualTo("Day", chosen_date)
+                    .get()
+                    .addOnSuccessListener { roomIds ->
+                        if (roomIds.isEmpty) {
+                            // Jeżeli dzień nie istnieje, dodaj nowy dokument
+                            newDayDocumentRef.set(dataToSet)
+                                .addOnSuccessListener {
+                                    Log.d(TAG, "Nowy dzień dodany pomyślnie.")
+                                    // Obsługa sukcesu, jeśli to konieczne
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e(TAG, "Błąd podczas dodawania nowego dnia", e)
+                                    // Obsługa błędu, jeśli to konieczne
+                                }
+                        } else {
+                            // Jeżeli dzień już istnieje, możesz dodać odpowiednie działania
+                            Log.d(TAG, "Dzień już istnieje: $chosen_date")
+
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "Błąd podczas sprawdzania istnienia dnia", e)
+                    }
+            }
+
+            // Wyczyść listę roomId po wykonaniu operacji
+            roomId.clear()
+        } else {
+            Toast.makeText(this, "Please choose a date", Toast.LENGTH_SHORT).show()
         }
     }
 
+
+
     fun checkRooms(){
-         Log.d(TAG,generateRandomKey())//niepotrzebne do usunięcia
+        Log.d(TAG,generateRandomKey())//niepotrzebne do usunięcia
         db.collection("rooms")
             .get()
             .addOnSuccessListener { roomIds ->
