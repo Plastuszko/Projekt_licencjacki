@@ -1,7 +1,9 @@
 package com.example.projekt_licencjacki
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -10,6 +12,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.projekt_licencjacki.databinding.SalaViewBinding
@@ -20,7 +23,11 @@ import java.text.SimpleDateFormat
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+
+
+
 class Sala: AppCompatActivity() {
+
     //kodowanie menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 
@@ -179,85 +186,104 @@ class Sala: AppCompatActivity() {
     }
 
     private fun change_data(chosen_hour: String, expectedDay: String, newBooked: Boolean, newWho: String) {
-        Log.d(TAG, "Changing data for room_id: $room_id, chosen_hour: $chosen_hour, expectedDay: $expectedDay")
+        if(isNetworkConnected()) {
+            Log.d(
+                TAG,
+                "Changing data for room_id: $room_id, chosen_hour: $chosen_hour, expectedDay: $expectedDay"
+            )
 
-        db.collection("rooms").document(room_id).collection("Days")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    // Pobierz dane dokumentu
-                    val documentData = document.data
+            db.collection("rooms").document(room_id).collection("Days")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        // Pobierz dane dokumentu
+                        val documentData = document.data
 
-                    // Sprawdź, czy dokument zawiera klucz "Hours" i "Day"
-                    if (documentData.containsKey("Hours") && documentData.containsKey("Day")) {
-                        val day = documentData["Day"] as? String
+                        // Sprawdź, czy dokument zawiera klucz "Hours" i "Day"
+                        if (documentData.containsKey("Hours") && documentData.containsKey("Day")) {
+                            val day = documentData["Day"] as? String
 
-                        if (day == expectedDay) {
-                            val hoursData = documentData["Hours"] as? MutableMap<String, Map<String, Any>>
+                            if (day == expectedDay) {
+                                val hoursData =
+                                    documentData["Hours"] as? MutableMap<String, Map<String, Any>>
 
-                            // Sprawdź, czy istnieje klucz, który zawiera wybraną godzinę
-                            val matchingHourKey = hoursData?.keys?.find { it.contains(chosen_hour) }
+                                // Sprawdź, czy istnieje klucz, który zawiera wybraną godzinę
+                                val matchingHourKey =
+                                    hoursData?.keys?.find { it.contains(chosen_hour) }
 
-                            if (matchingHourKey != null) {
-                                // Zaktualizuj dane w mapie
-                                val chosenHourData = hoursData[matchingHourKey] as? MutableMap<String, Any>
+                                if (matchingHourKey != null) {
+                                    // Zaktualizuj dane w mapie
+                                    val chosenHourData =
+                                        hoursData[matchingHourKey] as? MutableMap<String, Any>
 
-                                // Sprawdź, czy 'who' jest takie samo jak 'user_email' przed dokonaniem zmiany
-                                val currentWho = chosenHourData?.get("who") as? String
-                                if (currentWho == user_email||currentWho==""||admin) {
-                                    chosenHourData?.apply {
-                                        put("booked", newBooked)
-                                        put("who", newWho)
+                                    // Sprawdź, czy 'who' jest takie samo jak 'user_email' przed dokonaniem zmiany
+                                    val currentWho = chosenHourData?.get("who") as? String
+                                    if (currentWho == user_email || currentWho == "" || admin) {
+                                        chosenHourData?.apply {
+                                            put("booked", newBooked)
+                                            put("who", newWho)
+                                        }
+
+                                        // Zaktualizuj dane w Firestore
+                                        db.collection("rooms").document(room_id).collection("Days")
+                                            .document(document.id)
+                                            .update("Hours", hoursData)
+                                            .addOnSuccessListener {
+                                                Log.d(TAG, "Data updated successfully.")
+
+                                                // Dodaj kod aktualizacji interfejsu użytkownika (jeśli to konieczne)
+                                                updateButtonState(newBooked, newWho)
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.e(TAG, "Error updating data", e)
+                                            }
+                                    } else {
+                                        Log.d(
+                                            TAG,
+                                            "Current 'who' value is not equal to 'user_email'"
+                                        )
                                     }
-
-                                    // Zaktualizuj dane w Firestore
-                                    db.collection("rooms").document(room_id).collection("Days")
-                                        .document(document.id)
-                                        .update("Hours", hoursData)
-                                        .addOnSuccessListener {
-                                            Log.d(TAG, "Data updated successfully.")
-
-                                            // Dodaj kod aktualizacji interfejsu użytkownika (jeśli to konieczne)
-                                            updateButtonState(newBooked, newWho)
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e(TAG, "Error updating data", e)
-                                        }
                                 } else {
-                                    Log.d(TAG, "Current 'who' value is not equal to 'user_email'")
+                                    Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                                 }
-                            } else {
-                                Log.d(TAG, "Chosen hour $chosen_hour not found in document")
                             }
+                        } else {
+                            Log.d(TAG, "Document does not contain 'Hours' or 'Day' data")
                         }
-                    } else {
-                        Log.d(TAG, "Document does not contain 'Hours' or 'Day' data")
                     }
+                    check_data(chosen_hour, current_date)
                 }
-                check_data(chosen_hour, current_date)
-            }
+        }else{
+            Toast.makeText(this,"No internet Connection...",Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun updateButtonState(booked: Boolean?, who: String?) {
-        when {
-            booked == true && (who == user_email ||admin==true) -> {
-                Log.d(TAG, "WORKS CANCEL RESERVATION")
-                binding.bookARoomButton.text = "CANCEL RESERVATION"
-                val color = ContextCompat.getColor(this, R.color.chosen)
-                binding.bookARoomButton.setBackgroundColor(color)
+        if(isNetworkConnected()) {
+            when {
+                booked == true && (who == user_email || admin == true) -> {
+                    Log.d(TAG, "WORKS CANCEL RESERVATION")
+                    binding.bookARoomButton.text = "CANCEL RESERVATION"
+                    val color = ContextCompat.getColor(this, R.color.chosen)
+                    binding.bookARoomButton.setBackgroundColor(color)
+                }
+
+                booked == true && who != user_email -> {
+                    Log.d(TAG, "WORKS BOOKED")
+                    binding.bookARoomButton.text = "BOOKED"
+                    val color = ContextCompat.getColor(this, R.color.busy)
+                    binding.bookARoomButton.setBackgroundColor(color)
+                }
+
+                booked == false -> {
+                    Log.d(TAG, "WORKS BOOK A ROOM")
+                    binding.bookARoomButton.text = "BOOK A ROOM"
+                    val color = ContextCompat.getColor(this, R.color.BOOK_A_ROOM)
+                    binding.bookARoomButton.setBackgroundColor(color)
+                }
             }
-            booked == true && who != user_email -> {
-                Log.d(TAG, "WORKS BOOKED")
-                binding.bookARoomButton.text = "BOOKED"
-                val color = ContextCompat.getColor(this, R.color.busy)
-                binding.bookARoomButton.setBackgroundColor(color)
-            }
-            booked == false -> {
-                Log.d(TAG, "WORKS BOOK A ROOM")
-                binding.bookARoomButton.text = "BOOK A ROOM"
-                val color = ContextCompat.getColor(this, R.color.BOOK_A_ROOM)
-                binding.bookARoomButton.setBackgroundColor(color)
-            }
+        }else{
+            Toast.makeText(this,"No internet Connection...",Toast.LENGTH_SHORT).show()
         }
     }
     private fun uploadPrograms(room_id: String) {
@@ -301,6 +327,12 @@ class Sala: AppCompatActivity() {
                     continuation.resume(false)
                 }
         }
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
 
