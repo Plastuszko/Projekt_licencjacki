@@ -122,11 +122,11 @@ class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSe
             if(binding.buttonHourMenu.isVisible==true&&binding.chooseDateButton.isVisible==true){
                 binding.buttonHourMenu.isVisible=false
                 binding.chooseDateButton.isVisible=false
-                binding.hideHourButton.text="↑"
+                binding.hideHourButton.text="↓"
             }else{
                 binding.buttonHourMenu.isVisible=true
                 binding.chooseDateButton.isVisible=true
-                binding.hideHourButton.text="↓"
+                binding.hideHourButton.text="↑"
             }
 
         }

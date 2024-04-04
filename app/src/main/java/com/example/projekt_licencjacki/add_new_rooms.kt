@@ -41,116 +41,42 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
                 Calendar.DAY_OF_MONTH)).show()
             Log.d(TAG,"after : $chosen_date")
         }
-        binding.checkboxHour1.setOnCheckedChangeListener{ buttonView, isChecked ->
-                if(binding.checkboxHour1.isChecked){
-                    Hours[binding.checkboxHour1.text.toString()]= mutableMapOf(
-                        "booked" to false,
-                        "who" to ""
-                    )
-                }else if(!binding.checkboxHour1.isChecked){
-                    Hours.remove(binding.checkboxHour1.text.toString())
-                }
-                if(binding.checkboxAll.isChecked && !binding.checkboxHour1.isChecked){
-                    binding.checkboxAll.isChecked=false
-                }
-        }
-        binding.checkboxHour2.setOnCheckedChangeListener{ buttonView, isChecked ->
-            if(binding.checkboxHour2.isChecked){
-                Hours[binding.checkboxHour2.text.toString()]= mutableMapOf(
-                    "booked" to false,
-                    "who" to ""
-                )
 
-            }else if(!binding.checkboxHour2.isChecked){
-                Hours.remove(binding.checkboxHour2.text.toString())
-            }
-                if(binding.checkboxAll.isChecked && !binding.checkboxHour2.isChecked){
-                    binding.checkboxAll.isChecked=false
-
-            }
-        }
-        binding.checkboxHour3.setOnCheckedChangeListener{ buttonView, isChecked ->
-            if(binding.checkboxHour3.isChecked){
-                Hours[binding.checkboxHour3.text.toString()]= mutableMapOf(
-                    "booked" to false,
-                    "who" to ""
-                )
-
-            }else if(!binding.checkboxHour3.isChecked){
-                Hours.remove(binding.checkboxHour3.text.toString())
-            }
-            if(binding.checkboxAll.isChecked && !binding.checkboxHour3.isChecked){
-                binding.checkboxAll.isChecked=false
-            }
-        }
-        binding.checkboxHour4.setOnCheckedChangeListener{ buttonView, isChecked ->
-            if(binding.checkboxHour4.isChecked){
-                Hours[binding.checkboxHour4.text.toString()]= mutableMapOf(
-                    "booked" to false,
-                    "who" to ""
-                )
-
-            }else if(!binding.checkboxHour4.isChecked){
-                Hours.remove(binding.checkboxHour4.text.toString())
-            }
-            if(binding.checkboxAll.isChecked && !binding.checkboxHour4.isChecked){
-                binding.checkboxAll.isChecked=false
-            }
-        }
-        binding.checkboxHour5.setOnCheckedChangeListener{ buttonView, isChecked ->
-            if(binding.checkboxHour5.isChecked){
-                Hours[binding.checkboxHour5.text.toString()]= mutableMapOf(
-                    "booked" to false,
-                    "who" to ""
-                )
-
-            }else if(!binding.checkboxHour5.isChecked){
-                Hours.remove(binding.checkboxHour5.text.toString())
-            }
-            if(binding.checkboxAll.isChecked && !binding.checkboxHour5.isChecked){
-                binding.checkboxAll.isChecked=false
-            }
-        }
-        binding.checkboxHour6.setOnCheckedChangeListener{ buttonView, isChecked ->
-            if(binding.checkboxHour6.isChecked){
-                Hours[binding.checkboxHour6.text.toString()]= mutableMapOf(
-                    "booked" to false,
-                    "who" to ""
-                )
-
-            }else if(!binding.checkboxHour6.isChecked){
-                Hours.remove(binding.checkboxHour6.text.toString())
-            }
-            if(binding.checkboxAll.isChecked && !binding.checkboxHour6.isChecked){
-                binding.checkboxAll.isChecked=false
-            }
-        }
-        binding.checkboxHour7.setOnCheckedChangeListener{ buttonView, isChecked ->
-            if(binding.checkboxHour7.isChecked){
-                Hours[binding.checkboxHour7.text.toString()]= mutableMapOf(
-                    "booked" to false,
-                    "who" to ""
-                )
-
-            }else if(!binding.checkboxHour7.isChecked){
-                Hours.remove(binding.checkboxHour7.text.toString())
-            }
-            if(binding.checkboxAll.isChecked && !binding.checkboxHour7.isChecked){
-                binding.checkboxAll.isChecked=false
-            }
-        }
 
 
         binding.checkboxAll.setOnCheckedChangeListener{ buttonView, isChecked ->
             if(isChecked){
                 binding.checkboxAll.isChecked=true
-                binding.checkboxHour1.isChecked = true
-                binding.checkboxHour2.isChecked = true
-                binding.checkboxHour3.isChecked = true
-                binding.checkboxHour4.isChecked = true
-                binding.checkboxHour5.isChecked = true
-                binding.checkboxHour6.isChecked = true
-                binding.checkboxHour7.isChecked = true
+                Hours["8:30-10:00"]= mutableMapOf(
+                    "booked" to false,
+                    "who" to ""
+                )
+                Hours["10:10-11:40"]= mutableMapOf(
+                    "booked" to false,
+                    "who" to ""
+                )
+                Hours["12:00-13:30"]= mutableMapOf(
+                    "booked" to false,
+                    "who" to ""
+                )
+                Hours["13:40-15:20"]= mutableMapOf(
+                    "booked" to false,
+                    "who" to ""
+                )
+                Hours["15:30-17:00"]= mutableMapOf(
+                    "booked" to false,
+                    "who" to ""
+                )
+                Hours["17:10-18:40"]= mutableMapOf(
+                    "booked" to false,
+                    "who" to ""
+                )
+                Hours["19:00-20:30"]= mutableMapOf(
+                    "booked" to false,
+                    "who" to ""
+                )
+            }else if(!binding.checkboxAll.isChecked){
+                Hours.clear()
             }
 
         }
@@ -162,17 +88,27 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
                     Map_to_add[roomId[i]] = Hours.toMutableMap()
                 }
 
-                if (Map_to_add.isEmpty() || Hours.isEmpty()) {
-                    Toast.makeText(this, "Please choose data to add", Toast.LENGTH_SHORT).show()
+                if (Map_to_add.isEmpty()) {
+                    Toast.makeText(this, "Please choose date to add", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.d(TAG, "map to add: " + Map_to_add.toString())
                     addRooms()
                 }
             }
+            binding.checkboxAll.isChecked=false
         }
     }
 
-
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        lifecycleScope.launch {
+            //↓↓↓zapisuje ostatnią wybraną datę w trakcie wyboru w okienku
+            calendar.set(year, month, dayOfMonth)
+            //↓zmienia na cyfry
+            chosen_date = formatter.format(calendar.timeInMillis)
+            displayFormattedDate(chosen_date)
+            //------------------------------------------------------------
+        }
+    }
     private fun addRooms() {
         if (chosen_date.isNotEmpty()) {
             for (roomId in roomId) {
@@ -216,6 +152,7 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
             }
 
             // Wyczyść listę roomId po wykonaniu operacji
+
             roomId.clear()
         } else {
             Toast.makeText(this, "Please choose a date", Toast.LENGTH_SHORT).show()
@@ -243,15 +180,6 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     private fun displayFormattedDate(timestamp: String) {
         binding.displayDateAddRoom.text = timestamp
     }
-    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        lifecycleScope.launch {
-            //↓↓↓zapisuje ostatnią wybraną datę w trakcie wyboru w okienku
-            calendar.set(year, month, dayOfMonth)
-            //↓zmienia na cyfry
-            chosen_date = formatter.format(calendar.timeInMillis)
-            displayFormattedDate(chosen_date)
-            //------------------------------------------------------------
-        }
-    }
+
 
 }

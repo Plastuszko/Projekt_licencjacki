@@ -121,6 +121,9 @@ override fun onCreateOptionsMenu(menu: Menu?): Boolean {
             Log.d(TAG,"before:$ $current_date")
             DatePickerDialog(this,this,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show()
             Log.d(TAG,"after : $current_date")
+            lifecycleScope.launch {
+                reloadRooms()
+            }
         }
         //↓↓↓wygenerowanie aktualnej listy pokoi
 
@@ -130,11 +133,11 @@ override fun onCreateOptionsMenu(menu: Menu?): Boolean {
             if(binding.buttonHourMenu.isVisible==true&&binding.chooseDateButton.isVisible==true){
                 binding.buttonHourMenu.isVisible=false
                 binding.chooseDateButton.isVisible=false
-                binding.hideHourButton.text="↑"
+                binding.hideHourButton.text="↓"
             }else{
                 binding.buttonHourMenu.isVisible=true
                 binding.chooseDateButton.isVisible=true
-                binding.hideHourButton.text="↓"
+                binding.hideHourButton.text="↑"
             }
 
         }

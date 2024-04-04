@@ -16,7 +16,7 @@
         />
     <item
         android:id="@+id/add_reset_rooms_menu_button"
-        android:title="Add/Reset rooms"
+        android:title="Add rooms"
         android:visible="false"
         />
     <item

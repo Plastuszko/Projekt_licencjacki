@@ -57,7 +57,7 @@
             android:screenOrientation="portrait"
             android:name=".add_new_rooms"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:label="Add/Reset Rooms"
+            android:label="Add Rooms"
             android:exported="false"
 
             />
