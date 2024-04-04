@@ -27,26 +27,26 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
-//kodowanie menu
-override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    //kodowanie menu
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 
-    menuInflater.inflate(R.menu.menu_details, menu)
-    lifecycleScope.launch {
-        val adminStatus = check_admin()
+        menuInflater.inflate(R.menu.menu_details, menu)
+        lifecycleScope.launch {
+            val adminStatus = check_admin()
 
-        Log.d(TAG, "admin==$adminStatus")
-        if (adminStatus == true) {
+            Log.d(TAG, "admin==$adminStatus")
+            if (adminStatus == true) {
 
-            menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = true
-            Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
-        } else if (adminStatus == false) {
+                menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = true
+                Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
+            } else if (adminStatus == false) {
 
-            menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = false
-            Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
+                menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = false
+                Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
+            }
         }
+        return super.onCreateOptionsMenu(menu)
     }
-    return super.onCreateOptionsMenu(menu)
-}
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
@@ -215,48 +215,48 @@ override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     }
     //----------------------------------------------------------
 
-private suspend fun createroom(): List<Sala_constructor> {
-    clear_data()
-    check_data()
+    private suspend fun createroom(): List<Sala_constructor> {
+        clear_data()
+        check_data()
 
-    val roomsList = mutableListOf<Sala_constructor>()
-    if(Map_of_status.isNotEmpty()){
-        Log.d(TAG,"działa")
+        val roomsList = mutableListOf<Sala_constructor>()
+        if(Map_of_status.isNotEmpty()){
+            Log.d(TAG,"działa")
 
-    for (i in room_ids.indices) {
-        val room_id=room_ids[i]
-        val roomNumber = Map_of_numbers[room_id]!!
-        val roomCapacity = Map_of_capacities[room_id]!!
-        val roomType = Map_of_types[room_id]!!
-        var roomStatus=" "
-        Log.d(TAG,"status: "+Map_of_status[room_id])
-        if(Map_of_status[room_id]==false){
-             roomStatus="available"
-        }else{
-            roomStatus="unavailable"
+            for (i in room_ids.indices) {
+                val room_id=room_ids[i]
+                val roomNumber = Map_of_numbers[room_id]!!
+                val roomCapacity = Map_of_capacities[room_id]!!
+                val roomType = Map_of_types[room_id]!!
+                var roomStatus=" "
+                Log.d(TAG,"status: "+Map_of_status[room_id])
+                if(Map_of_status[room_id]==false){
+                    roomStatus="available"
+                }else{
+                    roomStatus="unavailable"
+                }
+                Log.d(TAG, "room_status: $Map_of_status")
+
+                Log.d(TAG,"current date: $current_date")
+                val sala = Sala_constructor(
+                    roomNumber,
+                    roomCapacity,
+                    current_date,
+                    chosen_hour,
+                    roomType,
+                    roomStatus,
+                    room_id,
+                    user_email
+                )
+                roomsList.add(sala)
+
+            }
         }
-        Log.d(TAG, "room_status: $Map_of_status")
-
-        Log.d(TAG,"current date: $current_date")
-        val sala = Sala_constructor(
-            roomNumber,
-            roomCapacity,
-            current_date,
-            chosen_hour,
-            roomType,
-            roomStatus,
-            room_id,
-            user_email
-        )
-        roomsList.add(sala)
-
-    }
-    }
-    //usuwa dane aby nie wyśiwetlać kila razy tej samej sali
+        //usuwa dane aby nie wyśiwetlać kila razy tej samej sali
 //    clear_data()
-    //-------------------------------------------------
-    return roomsList
-}
+        //-------------------------------------------------
+        return roomsList
+    }
 
 
 
@@ -301,7 +301,6 @@ private suspend fun createroom(): List<Sala_constructor> {
         try {
             val daysSnapshot = db.collection("rooms/${room_id.toString()}/Days").get().await()
             for (dayDocument in daysSnapshot.documents) {
-                var day_id = dayDocument.getString("did")
                 var date = dayDocument.getString("Day")
 
                 val hoursMap = dayDocument.get("Hours") as? Map<String, Map<String, Any>>
@@ -365,4 +364,3 @@ private suspend fun createroom(): List<Sala_constructor> {
         }
     }
 }
-

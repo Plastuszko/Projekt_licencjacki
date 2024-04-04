@@ -44,9 +44,9 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
 
 
-        binding.checkboxAll.setOnCheckedChangeListener{ buttonView, isChecked ->
+        binding.confirmBox.setOnCheckedChangeListener{ buttonView, isChecked ->
             if(isChecked){
-                binding.checkboxAll.isChecked=true
+                binding.confirmBox.isChecked=true
                 Hours["8:30-10:00"]= mutableMapOf(
                     "booked" to false,
                     "who" to ""
@@ -75,27 +75,27 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
                     "booked" to false,
                     "who" to ""
                 )
-            }else if(!binding.checkboxAll.isChecked){
+            }else if(!binding.confirmBox.isChecked){
                 Hours.clear()
             }
 
         }
-        binding.addResetBtn.setOnClickListener {
-            checkRooms()
-            if (chosen_date.isNotEmpty()) {
+        binding.addBtn.setOnClickListener {
+            checkRooms {
+                if (chosen_date.isNotEmpty()) {
+                    for (i in roomId.indices) {
+                        Map_to_add[roomId[i]] = Hours.toMutableMap()
+                    }
 
-                for (i in roomId.indices) {
-                    Map_to_add[roomId[i]] = Hours.toMutableMap()
+                    if (Map_to_add.isEmpty()) {
+                        Toast.makeText(this, "Please choose date to add", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Log.d(TAG, "map to add: " + Map_to_add.toString())
+                        addRooms()
+                    }
                 }
-
-                if (Map_to_add.isEmpty()) {
-                    Toast.makeText(this, "Please choose date to add", Toast.LENGTH_SHORT).show()
-                } else {
-                    Log.d(TAG, "map to add: " + Map_to_add.toString())
-                    addRooms()
-                }
+                binding.confirmBox.isChecked = false
             }
-            binding.checkboxAll.isChecked=false
         }
     }
 
@@ -161,14 +161,19 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
 
 
-    fun checkRooms(){
-        Log.d(TAG,generateRandomKey())//niepotrzebne do usunięcia
+    private fun checkRooms(callback: () -> Unit) {
         db.collection("rooms")
             .get()
             .addOnSuccessListener { roomIds ->
-                for(document in roomIds){
-                    roomId.add(document.get("rid").toString())
+                roomId.clear()
+                for (document in roomIds) {
+                    roomId.add(document.getString("rid") ?: "")
                 }
+                callback.invoke()
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error getting room IDs", e)
+                // Handle failure if needed
             }
     }
     fun generateRandomKey(): String {
