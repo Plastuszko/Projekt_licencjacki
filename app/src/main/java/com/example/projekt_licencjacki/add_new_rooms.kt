@@ -2,10 +2,13 @@ package com.example.projekt_licencjacki
 
 import android.app.DatePickerDialog
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.nfc.Tag
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,11 +20,14 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.UUID
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlin.random.Random
 
 
 private lateinit var binding: AddNewRoomsBinding
 private val formatter = SimpleDateFormat("dd.MM.yyyy")
+var user_email: String =""
 var chosen_date: String=""
 val calendar= Calendar.getInstance()
 var roomId=ArrayList<String>()
@@ -30,7 +36,68 @@ var Map_to_add: MutableMap<String, Any> = mutableMapOf()
 var db = Firebase.firestore
 
 class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
+
+    //kodowanie menu
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+        menuInflater.inflate(R.menu.menu_details, menu)
+        lifecycleScope.launch {
+            val adminStatus = check_admin()
+
+            Log.d(TAG, "admin==$adminStatus")
+            if (adminStatus == true) {
+
+                menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = true
+                Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
+            } else if (adminStatus == false) {
+
+                menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = false
+                Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
+            }
+        }
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if(item?.itemId==R.id.my_profile_menu_button){
+            var intent= Intent(this,list_of_rooms_user_profile::class.java)
+            intent.putExtra("USER",user_email)
+            this.startActivity(intent)
+
+        }
+        if(item?.itemId==R.id.list_of_rooms_menu_button){
+            var intent = Intent(this,list_of_rooms::class.java)
+            intent.putExtra("USER",user_email)
+            this.startActivity(intent)
+        }
+        if(item?.itemId==R.id.authors){
+            var intent = Intent(this,Authors::class.java)
+            intent.putExtra("USER",user_email)
+            this.startActivity(intent)
+        }
+        if(item?.itemId==R.id.add_reset_rooms_menu_button){
+            Toast.makeText(this,"You are already in Add Rooms activity", Toast.LENGTH_LONG).show()
+
+
+        }
+        if(item?.itemId==R.id.log_out_menu_button){
+            var intent= Intent(this,login_screen::class.java)
+            //↓↓↓powoduje brak możliwości powrócenia do wcześniej odpalonych activity↓↓↓
+            intent.flags=Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            this.startActivity(intent)
+            //↓↓↓wyłącza aktywność aby niepotrzebnie
+            finish()
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+    //koniec menu
     override fun onCreate(savedInstanceState: Bundle?) {
+        if(intent.hasExtra("USER")){
+            user_email=intent.getStringExtra("USER")!!
+            Toast.makeText(this,"Hi, $user_email",Toast.LENGTH_SHORT).show()
+        }
         super.onCreate(savedInstanceState)
         binding = AddNewRoomsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -186,5 +253,23 @@ class add_new_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         binding.displayDateAddRoom.text = timestamp
     }
 
-
+    private suspend fun check_admin(): Boolean {
+        return suspendCoroutine { continuation ->
+            db.collection("users")
+                .whereEqualTo("email", user_email)
+                .get()
+                .addOnSuccessListener { userData ->
+                    for (user in userData) {
+                        val adminStatus = user.getBoolean("admin") ?: false
+                        Log.d(TAG, "Uprawnienia użytkownika: $adminStatus")
+                        continuation.resume(adminStatus)
+                        return@addOnSuccessListener
+                    }
+                    continuation.resume(false) // If no user is found or admin field is not present
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resume(false)
+                }
+        }
+    }
 }

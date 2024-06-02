@@ -61,10 +61,12 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         }
         if(item?.itemId==R.id.authors){
             var intent = Intent(this,Authors::class.java)
+            intent.putExtra("USER",user_email)
             this.startActivity(intent)
         }
         if(item?.itemId==R.id.add_reset_rooms_menu_button){
             var intent = Intent(this,add_new_rooms::class.java)
+            intent.putExtra("USER",user_email)
             this.startActivity(intent)
 
         }
@@ -80,6 +82,11 @@ class list_of_rooms: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         return super.onOptionsItemSelected(item)
     }
     //koniec menu
+
+
+
+
+
     var user_email: String =""
     val calendar= Calendar.getInstance()
     var chosen_hour=" "

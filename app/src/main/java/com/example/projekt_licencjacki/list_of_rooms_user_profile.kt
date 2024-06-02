@@ -49,8 +49,11 @@ class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSe
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
         if(item?.itemId==R.id.my_profile_menu_button){
-            Toast.makeText(this,"You are already in your profile",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,"You are already in your profile", Toast.LENGTH_LONG).show()
+
+
         }
         if(item?.itemId==R.id.list_of_rooms_menu_button){
             var intent= Intent(this,list_of_rooms::class.java)
@@ -59,7 +62,14 @@ class list_of_rooms_user_profile: AppCompatActivity(), DatePickerDialog.OnDateSe
         }
         if(item?.itemId==R.id.authors){
             var intent = Intent(this,Authors::class.java)
+            intent.putExtra("USER",user_email)
             this.startActivity(intent)
+        }
+        if(item?.itemId==R.id.add_reset_rooms_menu_button){
+            var intent = Intent(this,add_new_rooms::class.java)
+            intent.putExtra("USER",user_email)
+            this.startActivity(intent)
+
         }
         if(item?.itemId==R.id.log_out_menu_button){
             var intent= Intent(this,login_screen::class.java)

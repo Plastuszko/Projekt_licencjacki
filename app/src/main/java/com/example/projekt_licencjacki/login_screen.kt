@@ -40,17 +40,6 @@ private lateinit var firebaseAuth: FirebaseAuth
                 Toast.makeText(this,"Please input data",Toast.LENGTH_SHORT).show()
             }
 
-            //warunek sprawdzający czy dane logowania są poprawne
-//            if(binding.loginText.text.toString()=="root"&&binding.passwordText.text.toString()=="admin") {
-//                val intent=Intent(this,list_of_rooms::class.java)
-//                startActivity(intent)
-//            }else{
-//                Toast.makeText(this,"nieprawidłowe dane logowania",Toast.LENGTH_LONG).show()
-//            }
-
-//            intent.putExtra("Login",username)
-//            intent.putExtra("Password",password)
-//            startActivity(intent)
         }
 
     }

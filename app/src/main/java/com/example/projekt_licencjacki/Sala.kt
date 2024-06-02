@@ -1,5 +1,6 @@
 package com.example.projekt_licencjacki
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
@@ -35,25 +36,53 @@ class Sala: AppCompatActivity() {
         lifecycleScope.launch {
             val adminStatus = check_admin()
 
-            Log.d(TAG, "admin==$adminStatus")
+            Log.d(ContentValues.TAG, "admin==$adminStatus")
             if (adminStatus == true) {
 
                 menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = true
-                Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
+                Log.d(ContentValues.TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
             } else if (adminStatus == false) {
 
                 menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible = false
-                Log.d(TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
+                Log.d(ContentValues.TAG, menu?.findItem(R.id.add_reset_rooms_menu_button)?.isVisible.toString())
             }
         }
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item?.itemId==R.id.list_of_rooms_menu_button){
-            val intent= Intent(this,list_of_rooms::class.java)
+
+        if(item?.itemId==R.id.my_profile_menu_button){
+            var intent= Intent(this,list_of_rooms_user_profile::class.java)
+            intent.putExtra("USER", com.example.projekt_licencjacki.user_email)
             this.startActivity(intent)
         }
+        if(item?.itemId==R.id.list_of_rooms_menu_button){
+            var intent = Intent(this,list_of_rooms::class.java)
+            intent.putExtra("USER", com.example.projekt_licencjacki.user_email)
+            this.startActivity(intent)
+        }
+        if(item?.itemId==R.id.authors){
+            var intent = Intent(this,Authors::class.java)
+            intent.putExtra("USER", com.example.projekt_licencjacki.user_email)
+            this.startActivity(intent)
+        }
+        if(item?.itemId==R.id.add_reset_rooms_menu_button){
+            var intent = Intent(this,add_new_rooms::class.java)
+            intent.putExtra("USER", com.example.projekt_licencjacki.user_email)
+            this.startActivity(intent)
+
+
+        }
+        if(item?.itemId==R.id.log_out_menu_button){
+            var intent= Intent(this,login_screen::class.java)
+            //↓↓↓powoduje brak możliwości powrócenia do wcześniej odpalonych activity↓↓↓
+            intent.flags=Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            this.startActivity(intent)
+            //↓↓↓wyłącza aktywność aby niepotrzebnie
+            finish()
+        }
+
         return super.onOptionsItemSelected(item)
     }
     //koniec menu

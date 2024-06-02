@@ -52,7 +52,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-firestore:24.10.2")
     implementation(platform("com.google.firebase:firebase-storage-ktx:20.3.0"))
-//    implementation(platform("com.google.firebase:firebase-firestore-ktx:24.10.2"))
 
     //koniec bazy danych
     implementation("androidx.core:core-ktx:1.12.0")

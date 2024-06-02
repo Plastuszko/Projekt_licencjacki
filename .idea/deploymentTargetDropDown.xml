@@ -10,22 +10,13 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\eryk-\.android\avd\Pixel_4_API_26.avd" />
+                  <value value="C:\Users\eryk-\.android\avd\Pixel_6_Pro_API_27.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-03-12T20:37:39.000734700Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-06-02T15:08:56.756047800Z" />
           <targetsSelectedWithDialog>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\eryk-\.android\avd\Pixel_4_API_26.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
             <Target>
               <type value="QUICK_BOOT_TARGET" />
               <deviceKey>
